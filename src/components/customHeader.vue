@@ -13,12 +13,13 @@
     <q-toolbar-title class>
       <div class="row items-center vertical-middle">
         <!-- {{localStorage.getItem('selectedTab')}} -->
-        <div class="col-auto">
+        <div class="col-auto row items-center">
           <img
             class="cursor-pointer"
             src="~assets/images/logo.png"
             style="height:38px;"
           />
+          <span class="q-ml-sm text-h6 text-weight-bold">Bijlipay</span>
         </div>
         <div class="col float-right" align="right">
           <q-btn flat color="grey-9" icon="far fa-bell" />

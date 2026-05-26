@@ -212,6 +212,7 @@
                     <div class="col-md-12 q-body-1">
                       <q-expansion-item
                         separator
+                        default-opened
                         group="closeOnOpenSubDocument"
                         multiline
                         class="full-width"

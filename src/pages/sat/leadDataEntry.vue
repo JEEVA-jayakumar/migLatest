@@ -35,6 +35,7 @@
 
       <q-list>
         <q-expansion-item
+          default-opened
           icon="info"
           group="primary"
           label="Merchant details"
@@ -340,7 +341,7 @@
         </q-expansion-item>
 
         <q-expansion-item
-          opened
+          default-opened
           icon="file_copy"
           group="primary"
           label="Documents"
