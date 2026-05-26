@@ -1,0 +1,221 @@
+<template>
+  <q-dialog
+    persistent
+    v-model="toggleModal"
+  >
+    <q-card style="min-width: 90vw; min-height: 90vh;">
+    <!--START: table title -->
+    <div class="row items-center q-px-lg q-py-md text-weight-regular bottom-border text-grey-9">
+      <div class="col q-title">Action Sheet</div>
+      <div class="col-auto">
+        <q-btn size="sm" round @click="emitToggleRemarks" outline color="dark" icon="clear"/>
+      </div>
+    </div>
+    <!--END: table title -->
+    <div class="column">
+      <q-table
+        title="Lead Validation"
+        table-class="customTableClass"
+        class="q-py-none"
+        :rows="tableData"
+        :columns="columns"
+        :filter="filter" v-model:pagination="paginationControl"
+        row-key="nam6"
+      >
+        <template v-slot:body-cell-action="props">
+          <q-td :props="props" class="group">
+          <q-btn
+            v-show="props.row.leadsCount == 0 && props.row.referencesCount == 0"
+            no-caps
+            color="negative"
+            icon="clear"
+            label="Disable"
+          />
+          <q-btn
+            v-show="props.row.referencesCount > 0"
+            no-caps
+            color="positive"
+            icon="refresh"
+            @click="toggleReAssignReferencesModal(props.row)"
+            label="Re-assign refs"
+          />
+          <q-btn
+            v-show="props.row.leadsCount > 0"
+            no-caps
+            color="positive"
+            icon="refresh"
+            @click="toggleReAssignLeadsModal(props.row)"
+            label="Re-assign leads"
+          />
+          </q-td>
+        </template>
+        <!-- END: table body modification -->
+        <template v-slot:top="props" class="bottom-border">
+          <!--START: table filter,search -->
+          <div class="col-md-5">
+            <q-input
+              clearable
+              color="grey-9"
+              v-model="filter"
+              placeholder="Type.."
+              label="Search by user name, email, phone"
+              class="q-mr-lg q-py-sm"
+            />
+          </div>
+          <!--END: table filter,search -->
+        </template>
+      </q-table>
+    </div>
+    <reAssignLeads
+      v-if="reAssignLeadsModal"
+      :propRowDetails="rowLeadsDetails"
+      :propToggleModal="reAssignLeadsModal"
+      @closeLeadsList="toggleReAssignLeadsModal()"
+    />
+    <reAssignReferences
+      v-if="reAssignReferencesModal"
+      :propRowDetails="rowReferencesDetails"
+      :propToggleModal="reAssignReferencesModal"
+      @closeReferencesList="toggleReAssignReferencesModal()"
+    />
+    </q-card>
+  </q-dialog>
+</template>
+
+<script>
+import { useVuelidate } from "@vuelidate/core";
+import { required, email } from '@vuelidate/validators';
+import { mapGetters, mapActions } from "vuex";
+import reAssignLeads from "./reAssignLeads.vue";
+import reAssignReferences from "./reAssignReferences.vue";
+export default {
+  setup() { return { v$: useVuelidate() } },
+  name: "leadValidation",
+  props: ["propDeteledUsers", "propToggleModal"],
+  components: {
+    reAssignLeads,
+    reAssignReferences
+  },
+  data() {
+    return {
+      filter: "",
+      loading: true,
+      rowLeadsDetails: [],
+      rowReferencesDetails: [],
+      tableData: this.propDeteledUsers,
+      toggleModal: this.propToggleModal,
+      toggleAjaxLoadFilter: false,
+      reAssignLeadsModal: false,
+      reAssignReferencesModal: false,
+      paginationControl: {
+        rowsPerPage: 6,
+        page: 1
+      },
+      columns: [
+        {
+          name: "name",
+          required: true,
+          label: "Name",
+          align: "left",
+          field: row => {
+            return row.user?.name || "NA";
+          },
+          sortable: false
+        },
+        {
+          name: "employeeID",
+          required: true,
+          label: "Employee ID",
+          align: "left",
+          field: row => {
+            return row.user?.employeeID || "NA";
+          },
+          sortable: false
+        },
+        {
+          name: "email",
+          required: true,
+          label: "Email",
+          align: "center",
+          field: row => {
+            return row.user?.email || "NA";
+          },
+          sortable: true
+        },
+        {
+          name: "contactNumber",
+          required: true,
+          label: "Phone",
+          align: "left",
+          field: row => {
+            return row.user?.contactNumber || "NA";
+          },
+          sortable: false
+        },
+        {
+          name: "userAddress",
+          required: true,
+          label: "Address",
+          align: "left",
+          field: row => {
+            return row.user?.userAddress || "NA";
+          },
+          sortable: false
+        },
+        {
+          name: "city",
+          required: true,
+          label: "City",
+          align: "left",
+          field: row => {
+            return row.user?.city || "NA";
+          },
+          sortable: false
+        },
+        {
+          name: "state",
+          required: true,
+          label: "State",
+          align: "left",
+          field: row => {
+            return row.user?.state || "NA";
+          },
+          sortable: false
+        },
+        {
+          name: "action",
+          required: true,
+          label: "",
+          align: "",
+          field: "action",
+          sortable: false
+        }
+      ]
+    };
+  },
+  computed: {
+    $v() { return this.v$; }
+  },
+  methods: {
+    toggleReAssignLeadsModal(details) {
+      this.reAssignLeadsModal = !this.reAssignLeadsModal;
+      if (details != undefined) {
+        console.log(details);
+        this.rowLeadsDetails = details;
+      }
+    },
+    toggleReAssignReferencesModal(details) {
+      this.reAssignReferencesModal = !this.reAssignReferencesModal;
+      if (details != undefined) {
+        this.rowReferencesDetails = details;
+      }
+    },
+    emitToggleRemarks() {
+      this.$emit("emitToggleDeleteUsersModal");
+    }
+  }
+};
+</script>
+
+<style scoped>
+</style>

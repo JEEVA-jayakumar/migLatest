@@ -1,0 +1,72 @@
+import { boot } from 'quasar/wrappers'
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: 'https://qaapp.bijlipay.co.in:8985/api/',
+  // Token-based auth; cookies are not required (and can complicate CORS in dev).
+  withCredentials: false
+})
+
+export default boot(({ app, router }) => {
+  app.config.globalProperties.$axios = axios
+  app.config.globalProperties.$api = api
+  app.config.globalProperties.$http = api
+
+  api.interceptors.request.use(config => {
+    // NOTE:
+    // - "Access-Control-Allow-*" are response headers; sending them in requests can
+    //   cause unexpected backend behavior.
+    // - Some endpoints (login/password) must NOT receive app-specific headers.
+    if (config.data instanceof FormData) {
+      // Allow Axios to set the correct Content-Type with boundary for FormData
+      delete config.headers["Content-Type"];
+    } else {
+      config.headers["Content-Type"] = "application/json";
+    }
+    config.headers["Accept"] = "application/json, text/plain, */*";
+    config.headers["X-Requested-With"] = "XMLHttpRequest";
+    config.headers["Access-Control-Allow-Origin"] = "*";
+    config.headers["X-Frame-Options"] = "SAMEORIGIN";
+
+    const isAuthEndpoint = config.url.includes("authorization/login") || config.url.includes("authorization/password");
+
+    if (!isAuthEndpoint) {
+      const rawNii = localStorage.getItem("aa_t");
+      if (rawNii) {
+        let niiStr = rawNii;
+        try { niiStr = JSON.parse(rawNii); } catch (e) { niiStr = rawNii; }
+        const pipeIdx = String(niiStr).lastIndexOf('|');
+        const niiValue = pipeIdx >= 0 ? String(niiStr).substring(pipeIdx + 1) : String(niiStr);
+        config.headers["NII"] = niiValue;
+      }
+
+      const token = localStorage.getItem("auth_token");
+      if (token) {
+        config.headers["Authorization"] = "Token " + token;
+      }
+    } else {
+      delete config.headers["Authorization"];
+      delete config.headers["NII"];
+    }
+    return config;
+  }, error => {
+    return Promise.reject(error);
+  });
+
+  api.interceptors.response.use(r => {
+    r.body = r.data;
+    return r;
+  }, e => {
+    if (e.response) {
+      e.body = e.response.data;
+      if (e.response.status === 401) {
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("u_i");
+        router.push({ name: "login" });
+      }
+    }
+    return Promise.reject(e);
+  });
+})
+
+export { axios, api }

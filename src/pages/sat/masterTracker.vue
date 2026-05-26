@@ -1,0 +1,298 @@
+<template>
+  <q-page>
+    <div>
+      <div
+        class="col-md-12 q-title q-px-lg q-py-md text-weight-regular bottom-border text-grey-9"
+      >Bijlipay Master Tracker-Implemented</div>
+
+      <generalLeadInformation
+        v-if="propToggleLeadInformation"
+        :leadInformation="addtnLeadInformation"
+        :propToggleLeadInformationPop="propToggleLeadInformation"
+        @closeLeadInformation="toggleLeadInformation"
+      />
+
+      <q-table
+        table-class="customTableClass"
+        :rows="tableData"
+        :columns="columns"
+        :filter="filter"
+        v-model:pagination="paginationControl"
+        row-key="id"
+        :loading="toggleAjaxLoadFilter"
+        :rows-per-page-options="[5,10,15,20,25]"
+        @request="ajaxLoadAllLeadInfo"
+      >
+        <template v-slot:body-cell-tid="props">
+          <q-td :props="props" v-if="props && props.row">
+            <span class="label text-primary"># {{props.row.tid}}</span>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-mid="props">
+          <q-td :props="props" v-if="props && props.row">
+            <span class="label text-primary"># {{props.row.mid}}</span>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-leadNumber="props">
+          <q-td v-if="props.row" :props="props" class="cursor-pointer" @click="toggleLeadInformation(props.row.leadInformation)">
+            <span class="label text-primary"># {{props.row.leadInformation.leadNumber}}</span>
+          </q-td>
+          <q-td v-else :props="props">NA</q-td>
+        </template>
+        <template v-slot:body-cell-mobileNumber="props">
+          <q-td :props="props" v-if="props && props.row">
+            {{props.row.leadInformation == null? 'NA':props.row.leadInformation.contactNumber}}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-leadAddress="props">
+          <q-td :props="props" v-if="props && props.row">
+            {{props.row.leadInformation == null? 'NA':props.row.leadInformation.leadAddress}}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-deviceStatusDate="props">
+          <q-td :props="props" v-if="props && props.row">
+            <span class="label">{{ $moment(props.row.deviceStatusDate).format("Do MMM Y") }}</span>
+          </q-td>
+        </template>
+
+        <template v-slot:top-right>
+          <q-input
+            clearable
+            v-model="filter"
+            color="grey-9"
+            placeholder="Type.."
+            label="Search by MID, TID, Merchant Name"
+            class="q-mr-lg q-py-sm"
+            dense
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          <q-btn
+            square
+            outline
+            color="purple-9"
+            label="Download as Excel"
+            class="q-mr-lg q-py-sm float-right"
+            size="md"
+            @click="downloadmastertrackerlist()"
+          />
+        </template>
+      </q-table>
+
+      <DownloadMasterTracker
+        v-if="propMasterTrackerList"
+        :propMasterTrackerList="propMasterTrackerList" 
+        @emitfnshowMasterTrackerList="downloadmastertrackerlist"
+      />
+      <showMerchantTransactionLevelDetails
+        v-if="valueToggleMerchantTransaction"
+        :valueToggleMerchantTransaction="valueToggleMerchantTransaction"
+        @revertRowClick="rowClick"
+      ></showMerchantTransactionLevelDetails>
+    </div>
+  </q-page>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+
+import showMerchantTransactionLevelDetails from "../../components/sat/showMerchantTransactionLevelDetails.vue";
+import generalLeadInformation from "../../components/generalLeadInformation.vue";
+import DownloadMasterTracker from "../../components/sat/DownloadMasterTracker.vue";
+
+export default {
+  name: "merchantTransactionLevel",
+  components: {
+    showMerchantTransactionLevelDetails,
+    generalLeadInformation,
+    DownloadMasterTracker,
+  },
+  data() {
+    return {
+      propToggleLeadInformation: false,
+      propMasterTrackerList: false,
+      addtnLeadInformation: null,
+      toggleAjaxLoadFilter: false,
+      paginationControl: {
+        rowsNumber: 10,
+        page: 1,
+        sortBy: "tid",
+        descending: false,
+        rowsPerPage: 10
+      },
+      tableData: [],
+      valueToggleMerchantTransaction: false,
+      filter: "",
+      columns: [
+        {
+          name: "tid",
+          required: true,
+          label: "TID",
+          align: "left",
+          field: "tid",
+          sortable: true
+        },
+        {
+          name: "mid",
+          required: true,
+          label: "MID",
+          align: "left",
+          field: "mid",
+          sortable: true
+        },
+        {
+          name: "leadNumber",
+          required: true,
+          label: "Lead Id",
+          align: "left",
+          field: row => {
+            return row.leadInformation ? row.leadInformation.leadNumber : 'NA';
+          },
+          sortable: false
+        },
+        {
+          name: "leadInformation",
+          required: true,
+          label: "ME Name",
+          align: "left",
+          field: row => {
+            return row.leadInformation ? row.leadInformation.leadName : 'NA';
+          },
+          sortable: false
+        },
+        {
+          name: "leadAddress",
+          required: true,
+          label: "Merchant Address",
+          align: "center",
+          field: row => {
+            return row.leadInformation ? row.leadInformation.leadAddress : 'NA';
+          },
+          sortable: false
+        },
+        {
+          name: "deviceName",
+          required: true,
+          label: "Device type",
+          align: "right",
+          field: row => {
+            return row.leadInformation && row.leadInformation.device ? row.leadInformation.device.deviceName : 'NA';
+          },
+          sortable: false
+        },
+        {
+          name: "device_serial_number",
+          required: true,
+          label: "Device Serial Number",
+          align: "left",
+          field: row => {
+            return row.regionalInventory == null
+              ? "NA"
+              : row.regionalInventory.serialNumber;
+          },
+          sortable: true
+        },
+        {
+          name: "deviceStatusDate",
+          required: true,
+          label: "Implementation Date",
+          align: "left",
+          field: "deviceStatusDate",
+          sortable: true
+        },
+        {
+          name: "assignedTo",
+          required: true,
+          label: "Implemented by",
+          align: "left",
+          field: row => {
+            return row.assignedTo == null ? "NA" : row.assignedTo.name + " | " + row.assignedTo.employeeID;
+          },
+          sortable: true
+        },
+        {
+          name: "deviceAddress",
+          required: true,
+          label: "Implemented Address",
+          align: "left",
+          field: "deviceAddress",
+          sortable: true
+        },
+        {
+          name: "mobileNumber",
+          required: true,
+          label: "Mobile Number",
+          align: "center",
+          field: row => {
+            return row.leadInformation ? row.leadInformation.contactNumber : 'NA';
+          },
+          sortable: false
+        }
+      ]
+    };
+  },
+  computed: {
+    ...mapGetters("MasterTracker", ["getMasterTrackerList"])
+  },
+  mounted() {
+    this.ajaxLoadAllLeadInfo({
+      pagination: this.paginationControl,
+      filter: this.filter
+    });
+  },
+  methods: {
+    ...mapActions("MasterTracker", ["MASTER_TRACKER_LIST"]),
+    ajaxLoadAllLeadInfo() {
+      this.toggleAjaxLoadFilter = true;
+      this.MASTER_TRACKER_LIST()
+        .then(response => {
+          this.toggleAjaxLoadFilter = false;
+        })
+        .catch(error => {
+          this.toggleAjaxLoadFilter = false;
+        });
+    },
+    ajaxLoadAllLeadInfo({ pagination, filter }) {
+      // we set QTable to "loading" state
+      this.$q.loading.show({
+        delay: 0, // ms
+        spinnerColor: "purple-9",
+        message: "Fetching data .."
+      });
+      this.MASTER_TRACKER_LIST({ pagination, filter })
+        .then(res => {
+          // updating pagination to reflect in the UI
+          this.paginationControl = pagination;
+
+          // we also set (or update) rowsNumber
+          this.paginationControl.rowsNumber = this.getMasterTrackerList.totalElements;
+          this.paginationControl.page = this.getMasterTrackerList.number + 1;
+
+          // then we update the rows with the fetched ones
+          this.tableData = this.getMasterTrackerList.content;
+          if (this.getMasterTrackerList.sort != null) {
+            this.paginationControl.sortBy = this.getMasterTrackerList.sort[0].property;
+            this.paginationControl.descending = this.getMasterTrackerList.sort[0].ascending;
+          }
+
+          // finally we tell QTable to exit the "loading" state
+          this.$q.loading.hide();
+        })
+        .catch(() => {
+          this.$q.loading.hide();
+        });
+    },
+    toggleLeadInformation(leadDetails) {
+      this.propToggleLeadInformation = !this.propToggleLeadInformation;
+      if (leadDetails != undefined) {
+        this.addtnLeadInformation = leadDetails;
+      }
+    },
+    downloadmastertrackerlist(){
+      this.propMasterTrackerList=!this.propMasterTrackerList;
+    }
+  }
+};
+</script>

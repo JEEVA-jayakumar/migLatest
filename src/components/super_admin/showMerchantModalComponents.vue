@@ -1,0 +1,361 @@
+<template>
+  <q-dialog
+    minimized
+    position="side"
+    v-model="toggleModal"
+    persistent
+    @escape-key="emitModalClose"
+    class="customModalOverlay"
+    :content-css="{padding:'75px 25px',minWidth:'40vw',minHeight:'100vh'}"
+  >
+<q-card style="min-width: 350px;">
+
+    <div class="row items-center bottom-border q-py-sm fit">
+      <div class="col">
+        <div class="text-h6 text-weight-regular">Manage merchant type</div>
+      </div>
+      <div class="col" align="right">
+        <q-btn outline round color="dark" size="sm" icon="clear" @click="emitModalClose"/>
+      </div>
+    </div>
+    <q-tabs v-model="tab" color="grey-9">
+      <!-- Tabs - notice  -->
+      <q-tab
+        @click="merchantTypeActiveList"
+
+        label="Active List"
+        name="tab-1"
+      />
+      <q-tab @click="merchantTypeDeActiveList" label="De-Actived List" name="tab-2"/>
+</q-tabs>
+<q-tab-panels v-model="tab" animated>
+<q-tab-panel name="tab-1">
+        <q-table
+          :rows="activeMerchantTypeList"
+          table-class="customSATableClass"
+          :columns="activatedColumns"
+          :filter="activeFilterSearch"
+          row-key="name"
+          color="grey-9"
+        >
+          <q-td v-slot:body-cell-action="props" :props="props">
+            <div class="row no-wrap no-padding">
+              <q-btn
+
+                no-caps
+                no-wrap
+                label="Modify"
+                icon="far fa-plus-square"
+                size="md"
+                @click="fnToggleUpdateModal(props.row)"
+                flat
+                class="text-light-blue"
+              ></q-btn>
+              <q-btn
+
+                no-caps
+                no-wrap
+                label="Disable"
+                icon="far fa-minus-square"
+                size="md"
+                @click="fnDisablePermission(props.row.id)"
+                flat
+                class="text-negative"
+              ></q-btn>
+            </div>
+          </q-td>
+          <template v-slot:top="props">
+            <!--START: table filter,search -->
+            <div class="col">
+              <q-input
+                clearable
+                color="grey-9"
+                v-model="activeFilterSearch"
+                placeholder="Type.."
+                label="Search by name, short name"
+                class="q-mr-lg"
+              />
+            </div>
+            <!--ENDv-model: table filter,search -->
+          </template>
+        </q-table>
+      </q-tab-panel>
+<q-tab-panel name="tab-2">
+        <q-table
+          :rows="deActiveMerchantTypeList"
+          table-class="customSATableClass"
+          :columns="deActivatedColumns"
+          :filter="deActivatedFilterSearch" v-model:pagination="paginationControl"
+          row-key="id"
+          color="grey-9"
+        >
+          <q-td v-slot:body-cell-action="props" :props="props">
+            <div class="row no-wrap no-padding">
+              <q-btn
+
+                no-caps
+                no-wrap
+                label="Enable"
+                icon="far fa-check-square"
+                size="md"
+                @click="fnEnableMerchantType(props.row)"
+                flat
+                class="text-positive"
+              ></q-btn>
+            </div>
+          </q-td>
+          <template v-slot:top="props">
+            <!--START: table filter,search -->
+            <div class="col">
+              <q-input
+                clearable
+                color="grey-9"
+                v-model="deActivatedFilterSearch"
+                placeholder="Type.."
+                label="Search by name"
+                class="q-mr-lg"
+              />
+            </div>
+            <!--END: table filter,search -->
+          </template>
+        </q-table>
+      </q-tab-panel>
+</q-tab-panels>
+    <!--START: Show create MerchantTypes -->
+    <showCreateMerchantType
+      v-if="propShowCreateMerchantType"
+      :propShowCreateMerchantType="propShowCreateMerchantType"
+      @emitfnshowMerchantTypes="MerchantTypeCreate"
+    ></showCreateMerchantType>
+    <!--END: Show create MerchantTypes -->
+    <!--START: Show edit MerchantTypes -->
+    <showEditMerchantType
+      v-if="propShowEditMerchantType"
+      :propShowEditMerchantTypes="propShowEditMerchantType"
+      :propRowDetails="propRowDetails"
+      @emitfnshowMerchantTypes="refreshMerchantTypeList"
+    ></showEditMerchantType>
+    <!--END: Show edit MerchantTypes -->
+
+</q-card>
+</q-dialog>
+</template>
+
+<script>
+import { useVuelidate } from "@vuelidate/core";
+import { mapGetters, mapActions } from "vuex";
+import { required } from "@vuelidate/validators";
+import showCreateMerchantType from "./createMerchantType.vue";
+import showEditMerchantType from "./editMerchantType.vue";
+export default {
+  setup() { return { v$: useVuelidate() } },
+  props: ["propToggleModal"],
+  // name: 'ComponentName',
+  components: {
+    showCreateMerchantType,
+    showEditMerchantType
+  },
+  data() {
+    return {
+      tab: 'tab-1',
+      toggleModal: this.propToggleModal,
+      makeUpdateElementActive: false,
+
+      propShowCreateMerchantType: false,
+      propShowEditMerchantType: false,
+      propRowDetails: "",
+
+      activeMerchantTypeList: [],
+      deActiveMerchantTypeList: [],
+
+      formData: {
+        merchant: ""
+      },
+
+      /* START >>Table properties */
+      activeFilterSearch: "",
+      deActivatedFilterSearch: "",
+      paginationControl: {
+        rowsPerPage: 5
+      },
+      /* END >>Table properties */
+
+      /* START >>Table data */
+      activatedColumns: [
+        {
+          name: "merchantTypeName",
+          required: true,
+          label: "Merchant type",
+          align: "",
+          field: "merchantTypeName",
+          sortable: false
+        },
+        {
+          name: "action",
+          required: true,
+          label: "",
+          align: "",
+          field: "action",
+          sortable: false
+        }
+      ],
+      deActivatedColumns: [
+        {
+          name: "merchantTypeName",
+          required: true,
+          label: "Merchant type",
+          align: "",
+          field: "merchantTypeName",
+          sortable: false
+        },
+        {
+          name: "action",
+          required: true,
+          label: "",
+          align: "",
+          field: "action",
+          sortable: false
+        }
+      ]
+      /* END >>Table data */
+    };
+  },
+  created() {
+    this.merchantTypeActiveList();
+  },
+  computed: {
+    $v() { return this.v$; },
+    ...mapGetters("merchantTypes", [
+      "getActiveMerchantTypes",
+      "getDeActivatedMerchantTypes"
+    ])
+  },
+
+  methods: {
+    emitModalClose() {
+      this.$emit("emitToggleModal");
+    },
+    ...mapActions("merchantTypes", [
+      "MERCHANT_TYPE_ACTIVE_LIST",
+      "MERCHANT_TYPE_DEACTIVED_LIST",
+      "UPDATE_MERCHANT_TYPE_AND_SET_ACTIVE",
+      "DELETE_MERCHANT_TYPE_AND_SET_ACTIVE"
+    ]),
+    /* START >> Function to save, update or delete */
+    merchantTypeActiveList() {
+      this.MERCHANT_TYPE_ACTIVE_LIST().then(() => {
+        this.activeMerchantTypeList = this.getActiveMerchantType;
+      });
+    },
+    merchantTypeDeActiveList() {
+      this.MERCHANT_TYPE_DEACTIVED_LIST().then(() => {
+        this.deActiveMerchantTypeList = this.getDeActivatedMerchantType;
+      });
+    },
+    merchantTypeCreate(token) {
+      this.propShowCreateMerchantType = !this.propShowCreateMerchantType;
+      if (token == "refresh") {
+        this.merchantTypeActiveList();
+      }
+    },
+
+    merchantTypeEdit(rowDetails) {
+      this.propShowEditMerchantType = !this.propShowEditMerchantType;
+      this.propRowDetails = rowDetails;
+    },
+
+    refreshMerchantTypeList() {
+      this.propShowEditMerchantType = !this.propShowEditMerchantType;
+      this.merchantTypeActiveList();
+    },
+    merchantTypeDisable(rowDetails) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: "Are you sure want to disable Merchant type?",
+          ok: "Continue",
+          cancel: "Cancel"
+        }).then(() => {
+          this.$q.loading.show({
+            delay: 100, // ms
+            message: "Please Wait",
+            spinnerColor: "purple-9",
+            customClass: "shadow-none"
+          });
+          this.DELETE_MERCHANT_TYPE_AND_SET_ACTIVE(rowDetails)
+            .then(response => {
+              this.merchantTypeActiveList();
+              this.$q.notify({
+                color: "negative",
+                position: "bottom",
+                message: "Merchant type deactivated",
+                icon: "thumb_up"
+              });
+            }).catch(error => {
+              this.$q.notify({
+                color: "warning",
+                position: "bottom",
+                message: "Please try again!",
+                icon: "thumb_down"
+              });
+            });
+          this.$q.loading.hide();
+        }).catch(() => {
+          this.$q.notify({
+            color: "negative",
+            position: "bottom",
+            message: "No changes made!",
+            icon: "thumb_down"
+          });
+        });
+    },
+    fnEnableMerchantType(rowDetails) {
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: "Are you sure want to disable Merchant type?",
+          ok: "Continue",
+          cancel: "Cancel"
+        }).then(() => {
+          this.$q.loading.show({
+            delay: 100, // ms
+            message: "Please Wait",
+            spinnerColor: "purple-9",
+            customClass: "shadow-none"
+          });
+          this.UPDATE_MERCHANT_TYPE_AND_SET_ACTIVE(rowDetails)
+            .then(response => {
+              this.merchantTypeDeActiveList();
+              this.$q.notify({
+                color: "positive",
+                position: "bottom",
+                message: `Merchant type: ${
+                  rowDetails.merchantTypeName
+                } has been enabled`,
+                icon: "thumb_up"
+              });
+            }).catch(error => {
+              this.$q.notify({
+                color: "warning",
+                position: "bottom",
+                message: "Please try again!",
+                icon: "thumb_down"
+              });
+            });
+          this.$q.loading.hide();
+        }).catch(() => {
+          this.$q.notify({
+            color: "negative",
+            position: "bottom",
+            message: "No changes made!",
+            icon: "thumb_down"
+          });
+        });
+    }
+    /* END >> Function to save, update or delete */
+  }
+};
+</script>
+
+<style>
+</style>

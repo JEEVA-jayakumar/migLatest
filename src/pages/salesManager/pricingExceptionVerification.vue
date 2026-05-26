@@ -1,0 +1,553 @@
+<template>
+  <q-page>
+    <div>
+      <!-- //Common lead information in popup -->
+      <generalLeadInformation
+        v-if="propToggleLeadInformation"
+        :leadInformation="addtnLeadInformation"
+        :propToggleLeadInformationPop="propToggleLeadInformation"
+        @closeLeadInformation="toggleLeadInformation"
+      />
+
+      <div
+        class="row bottom-border items-center"
+        :class="getRoleForTableToggleRsmList == true? 'q-py-sm':'q-py-md'"
+      >
+        <!--START: table title -->
+        <div class="col q-title q-px-lg text-weight-regular text-grey-9">Pricing Exception Approval</div>
+        <div class="col-auto">
+          <q-btn
+            flat
+            icon="arrow_left"
+            @click="toggleTabs"
+            v-if="getRoleForTableToggleRsmList == true"
+            label="Go back"
+          />
+        </div>
+      </div>
+      <!--END: table title -->
+      <div v-if="shouldShowGivenPricefield">
+        <q-tabs v-model="tab" active-color="purple-9" indicator-color="purple-9" align="left" narrow-indicator dense class="text-grey">
+          <q-tab name="tab-1" label="Pending">
+            <q-badge color="purple-9" floating v-if="pricingExceptionCountForTab > 0">{{ pricingExceptionCountForTab }}</q-badge>
+          </q-tab>
+          <q-tab name="tab-2" label="History" />
+        </q-tabs>
+
+        <q-tab-panels v-model="tab" animated swipeable vertical transition-prev="jump-up" transition-next="jump-up">
+          <q-tab-panel name="tab-1" class="no-padding">
+            <!--START: table lead validation -->
+            <q-table
+              table-class="customTableClass"
+              :rows="getPricingExceptionList || []"
+              :columns="columns"
+              :filter="filter"
+              v-model:pagination="paginationControl"
+              row-key="name"
+            >
+              <!--START: table body modification -->
+              <template v-slot:body-cell-leadNumber="props">
+                <q-td
+                  :props="props"
+                  class="cursor-pointer"
+                  @click="toggleLeadInformation(props.row)"
+                >
+                  <span class="label text-primary"># {{props.row.leadNumber}}</span>
+                </q-td>
+              </template>
+              <template v-slot:body-cell-submittoRSMDate="props">
+                <q-td
+                  :props="props"
+                >{{ props.row.submittoRSMDate ? $moment(props.row.submittoRSMDate).format("Do MMM Y") : 'NA' }}</q-td>
+              </template>
+              <template v-slot:body-cell-action="props">
+                <q-td :props="props">
+                  <q-btn
+                    highlight
+                    push
+                    outline
+                    color="purple-9"
+                    size="sm"
+                    @click="pushToDetailedScreenRsm(props.row.id)"
+                  >Review</q-btn>
+                </q-td>
+              </template>
+              <!--END: table body modification -->
+              <template v-slot:top="props">
+                <!--START: table filter,search -->
+                <div class="col-md-5">
+                  <q-search
+                    clearable
+                    color="grey-9"
+                    v-model="filter"
+                    placeholder="Type.."
+                    float-label="Search by Merchant Name, Lead ID"
+                    class="q-mr-lg q-py-sm"
+                  />
+                </div>
+                <!--END: table filter,search -->
+              </template>
+            </q-table>
+            <!--END: table lead validation -->
+          </q-tab-panel>
+          <q-tab-panel name="tab-2" class="no-padding">
+            <!--START: table data -->
+            <q-table
+              v-if=" getRoleForTableToggleRsmList == false"
+              table-class="customTableClass"
+              :rows="getPricingRsmList || []"
+              :columns="rsmcolumns"
+              :filter="filter"
+              v-model:pagination="paginationControl"
+              row-key="name"
+            >
+              <template v-slot:body="props">
+                <q-tr
+                  :class="[rowActiveId == props.rowIndex? 'bg-grey-4 text-dark':'']"
+                  :props="props"
+                  @mouseover="rowHover(props.rowIndex)"
+                  @click="rowClick(props.row, props.rowIndex)"
+                  class="cursor-pointer"
+                >
+                  <q-td v-for="col in props.cols" :key="col.name" :props="props">{{ col.value }}</q-td>
+                </q-tr>
+              </template>
+            </q-table>
+            <!--END: table data -->
+            <!--START: table data -->
+            <!--START: table lead validation -->
+            <q-table
+              v-if=" getRoleForTableToggleRsmList == true"
+              table-class="customTableClass"
+              :rows="pricingExceptionByRsmIDList || []"
+              :columns="rsmcolumnsLeads"
+              :filter="filter"
+              v-model:pagination="paginationControl"
+              row-key="name"
+            >
+              <!--START: table body modification -->
+              <template v-slot:body-cell-leadNumber="props">
+                <q-td
+                  :props="props"
+                  class="cursor-pointer"
+                  @click="toggleLeadInformation(props.row)"
+                >
+                  <span class="label text-primary"># {{props.row.leadNumber}}</span>
+                </q-td>
+              </template>
+              <template v-slot:body-cell-action="props">
+                <q-td :props="props">
+                  <q-btn
+                    highlight
+                    push
+                    outline
+                    color="purple-9"
+                    size="sm"
+                    @click="pushToDetailedScreen(props.row.id)"
+                  >Review</q-btn>
+                </q-td>
+              </template>
+              <!--END: table body modification -->
+              <template v-slot:top="props">
+                <!--START: table filter,search -->
+                <div class="col-md-5">
+                  <q-search
+                    clearable
+                    color="grey-9"
+                    v-model="filter"
+                    placeholder="Type.."
+                    float-label="Search by Merchant Name, Lead ID"
+                    class="q-mr-lg q-py-sm"
+                  />
+                </div>
+                <!--END: table filter,search -->
+              </template>
+            </q-table>
+            <!--END: table lead validation -->
+            <!--END: table data -->
+          </q-tab-panel>
+        </q-tab-panels>
+      </div>
+      <div v-else>
+        <!--START: table lead validation -->
+        <q-table
+          table-class="customTableClass"
+          :rows="getPricingExceptionList || []"
+          :columns="columns"
+          :filter="filter"
+          v-model:pagination="paginationControl"
+          row-key="name"
+        >
+          <template v-slot:body-cell-submittoRSMDate="props">
+            <q-td
+              :props="props"
+            >{{ props.row.submittoRSMDate ? $moment(props.row.submittoRSMDate).format("Do MMM Y") : 'NA' }}</q-td>
+          </template>
+          <!--START: table body modification -->
+          <template v-slot:body-cell-leadNumber="props">
+            <q-td
+              :props="props"
+              class="cursor-pointer"
+              @click="toggleLeadInformation(props.row)"
+            >
+              <span class="label text-primary"># {{props.row.leadNumber}}</span>
+            </q-td>
+          </template>
+          <template v-slot:body-cell-action="props">
+            <q-td :props="props">
+              <q-btn
+                highlight
+                push
+                outline
+                color="purple-9"
+                size="sm"
+                @click="pushToDetailedScreenRsm(props.row.id)"
+              >Review</q-btn>
+            </q-td>
+          </template>
+          <!--END: table body modification -->
+          <template v-slot:top="props">
+            <!--START: table filter,search -->
+            <div class="col-md-5">
+              <q-search
+                clearable
+                color="grey-9"
+                v-model="filter"
+                placeholder="Type.."
+                float-label="Search by Merchant Name, Lead ID"
+                class="q-mr-lg q-py-sm"
+              />
+            </div>
+            <!--END: table filter,search -->
+          </template>
+        </q-table>
+        <!--END: table lead validation -->
+      </div>
+    </div>
+  </q-page>
+</template>
+
+<script>
+import { useVuelidate } from '@vuelidate/core'
+import { required } from '@vuelidate/validators';
+import { mapGetters, mapActions } from "vuex";
+import generalLeadInformation from "../../components/generalLeadInformation.vue";
+
+export default {
+  setup() {
+    return { v$: useVuelidate() };
+  },
+  name: "SalesManagerPricingExceptionVerification",
+  components: {
+    generalLeadInformation,
+  },
+  data() {
+    return {
+      tab: 'tab-1',
+      shouldShowGivenPricefield: false,
+      toggleAjaxLoadFilter: false,
+      pricingExceptionCountForTab: 0,
+      shouldShowNHscreen: true,
+      getRoleForTableToggleRsmList: false,
+      rowActiveId: 0,
+
+      propToggleLeadInformation: false,
+      addtnLeadInformation: null,
+
+      filter: "",
+      paginationControl: {
+        rowsPerPage: 10,
+      },
+      columns: [
+        {
+          name: "createdBy",
+          required: true,
+          label: "SO name",
+          align: "left",
+          field: (row) => {
+            return row.createdBy?.name || 'NA';
+          },
+          sortable: false,
+        },
+        {
+          name: "submittoRSMDate",
+          required: true,
+          label: "Submitted to RSM date",
+          align: "left",
+          field: (row) => {
+            return row.submittoRSMDate;
+          },
+          sortable: false,
+        },
+        {
+          name: "leadNumber",
+          required: true,
+          label: "Lead ID",
+          align: "left",
+          field: "leadNumber",
+          sortable: true,
+        },
+        {
+          name: "Status",
+          required: true,
+          label: "Type",
+          align: "left",
+          field: (row) => {
+            return row.verifiedCmsPricingStatus == 2 ||
+              row.verifiedCmsPricingStatus == 6
+              ? "Change Request"
+              : "New Lead";
+          },
+          sortable: true,
+        },
+        {
+          name: "leadName",
+          required: true,
+          label: "Merchant name",
+          align: "left",
+          field: "leadName",
+          sortable: false,
+        },
+        {
+          name: "plan",
+          required: true,
+          label: "Regular plan",
+          align: "left",
+          field: (row) => {
+            return row.plan?.planName || 'NA';
+          },
+          sortable: false,
+        },
+        {
+          name: "merchantCategory",
+          required: true,
+          label: "Merchant category",
+          align: "left",
+          field: (row) => {
+            return row.merchantCategory?.merchantCategoryName || 'NA';
+          },
+          sortable: false,
+        },
+        {
+          name: "action",
+          required: true,
+          label: "",
+          align: "left",
+          field: "action",
+          sortable: false,
+        },
+      ],
+      rsmcolumnsLeads: [
+        {
+          name: "createdBy",
+          required: true,
+          label: "SO name",
+          align: "left",
+          field: (row) => {
+            return row.createdBy?.name || "";
+          },
+          sortable: false,
+        },
+        {
+          name: "submittoRSMDate",
+          required: true,
+          label: "Submitted to RSM date",
+          align: "left",
+          field: (row) => {
+            return row.submittoRSMDate;
+          },
+          sortable: false,
+        },
+        {
+          name: "leadNumber",
+          required: true,
+          label: "Lead ID",
+          align: "left",
+          field: "leadNumber",
+          sortable: true,
+        },
+        {
+          name: "leadName",
+          required: true,
+          label: "Merchant name",
+          align: "left",
+          field: "leadName",
+          sortable: false,
+        },
+        {
+          name: "plan",
+          required: true,
+          label: "Regular plan",
+          align: "left",
+          field: (row) => {
+            return row.plan?.planName || "";
+          },
+          sortable: false,
+        },
+        {
+          name: "merchantCategory",
+          required: true,
+          label: "Merchant category",
+          align: "left",
+          field: (row) => {
+            return row.merchantCategory?.merchantCategoryName || "";
+          },
+          sortable: false,
+        },
+        {
+          name: "action",
+          required: true,
+          label: "",
+          align: "left",
+          field: "action",
+          sortable: false,
+        },
+      ],
+      rsmcolumns: [
+        {
+          name: "name",
+          required: true,
+          label: "RSM name",
+          align: "left",
+          field: "name",
+          sortable: false,
+        },
+      ],
+      loading: true,
+      lazy: [],
+      select: "fb",
+      multipleSelect: ["goog", "twtr"],
+      error: true,
+      warning: false,
+      options: [
+        {
+          label: "Google",
+          value: "goog",
+        },
+        {
+          label: "Facebook",
+          value: "fb",
+        },
+        {
+          label: "Twitter",
+          value: "twtr",
+        },
+        {
+          label: "Apple Inc.",
+          value: "appl",
+        },
+        {
+          label: "Oracle",
+          value: "ora",
+        },
+      ],
+    };
+  },
+
+  created() {
+    this.pricingExceptionList();
+  },
+
+  computed: {
+    $v() {
+      return this.v$;
+    },
+    ...mapGetters("rsmPricingExceptionVerification", [
+      "getPricingExceptionList",
+      "pricingExceptionByRsmIDList",
+      "getPricingRsmList",
+    ]),
+  },
+
+  methods: {
+    ...mapActions("rsmPricingExceptionVerification", [
+      "PRICING_EXCEPTION_LIST",
+      "PRICING_RSM_LIST",
+      "PRICING_EXCEPTION_LIST_WHERE_RSMID",
+    ]),
+
+    pricingExceptionList() {
+      this.$q.loading.show({
+        delay: 0, // ms
+        spinnerColor: "purple-9",
+        message: "Fetching list..",
+      });
+      let self = this;
+      let userInfo = JSON.parse(localStorage.getItem("u_i"));
+      let finalObj = _.find(
+        userInfo.roles,
+        function (oo) {
+          return (
+            oo.hierarchyRoleLevel == self.$ROLE_HIERARCHY_SALES_NATIONAL_HEAD
+          );
+        }
+      );
+      if (finalObj == undefined) {
+        this.shouldShowGivenPricefield = false;
+      } else {
+        this.shouldShowGivenPricefield = true;
+      }
+      this.PRICING_EXCEPTION_LIST()
+        .then(() => {
+          this.pricingExceptionCountForTab = this.getPricingExceptionList.length;
+        })
+        .then(() => {
+          this.PRICING_RSM_LIST();
+          this.$q.loading.hide();
+        })
+        .catch(() => {
+          this.$q.loading.hide();
+        });
+    },
+    // Function to toggle lead information pop up screen
+    toggleLeadInformation(leadDetails) {
+      this.propToggleLeadInformation = !this.propToggleLeadInformation;
+      if (leadDetails != undefined) {
+        this.addtnLeadInformation = leadDetails;
+      }
+    },
+    rowHover(index) {
+      this.rowActiveId = index;
+    },
+    rowClick(item, index) {
+      this.$q.loading.show({
+        delay: 0, // ms
+        spinnerColor: "purple-9",
+        message: "Fetching list..",
+      });
+      this.rowActiveId = index;
+      this.getRoleForTableToggleRsmList = true;
+      this.PRICING_EXCEPTION_LIST_WHERE_RSMID(item)
+        .then(() => {
+          this.$q.loading.hide();
+        })
+        .catch(() => {
+          this.$q.loading.hide();
+        });
+    },
+
+    pushToDetailedScreen(leadId) {
+      this.$router.push(
+        "/sales/manager/pricing/exception/verification/lead/" +
+          leadId +
+          "/details/" +
+          leadId
+      );
+    },
+    pushToDetailedScreenRsm(leadId) {
+      this.$router.push(
+        "/sales/manager/pricing/exception/verification/lead/" +
+          leadId +
+          "/details/"
+      );
+    },
+
+    toggleTabs() {
+      this.getRoleForTableToggleRsmList = false;
+    },
+  },
+};
+</script>
+
+<style>
+</style>

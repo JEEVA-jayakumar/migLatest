@@ -1,0 +1,251 @@
+<template>
+  <q-page>
+    <!-- content -->
+    <div>
+      <generalLeadInformation
+        v-if="propToggleLeadInformation"
+        :leadInformation="addtnLeadInformation"
+        :propToggleLeadInformationPop="propToggleLeadInformation"
+        @closeLeadInformation="toggleLeadInformation"
+      />
+      <div class="q-pa-md">
+        <q-table
+          :rows="tableData"
+          :columns="columnData"
+          table-class="customTableClass"
+          :filter="filterSearch"
+          v-model:pagination="paginationControl"
+          row-key="id"
+          :loading="tableAjaxLoading"
+          :rows-per-page-options="[10, 20, 50, 100, 150, 200]"
+          color="dark"
+          @request="ajaxLoadAllLeadInfo"
+        >
+          <template v-slot:body-cell-leadNumber="props">
+            <q-td
+v-if="props.row"               :props="props"
+              class="cursor-pointer"
+              @click="toggleLeadInformation(props.row.leadNumber)"
+            >
+              <span class="label text-primary"># {{ props.row.leadNumber }}</span>
+            </q-td>
+          </template>
+          <template v-slot:body-cell-submitToMarsDate="props">
+            <q-td v-if="props.row" :props="props">
+              {{ $moment(props.row.submitToMarsDate).format("Do MMM YYYY") }}
+            </q-td>
+          </template>
+          <template v-slot:top>
+            <div class="col-md-5">
+              <q-input
+                clearable
+                color="grey-9"
+                v-model="filterSearch"
+                placeholder="Type.."
+                label="Search By Lead Number"
+                class="q-mr-lg q-py-sm"
+              >
+                <template v-slot:append>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </div>
+          </template>
+        </q-table>
+      </div>
+    </div>
+  </q-page>
+</template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex'
+import generalLeadInformation from '../../components/generalLeadInformation.vue'
+
+export default {
+  name: 'varaneekRejectedLead',
+  components: {
+    generalLeadInformation
+  },
+  data () {
+    return {
+      propToggleLeadInformation: false,
+      addtnLeadInformation: null,
+
+      filterSearch: '',
+      selectedTab: 'rejectedTab',
+      assignToOptions: [],
+      tableData: [],
+      // Defining columns for table
+      columnData: [
+        {
+          name: 'leadNumber',
+          required: true,
+          label: 'Lead Number',
+          align: 'left',
+          field: row => row.leadNumber,
+          sortable: false
+        },
+        {
+          name: 'submitToMarsDate',
+          required: true,
+          label: 'Date of Submission',
+          align: 'left',
+          field: row => row.submitToMarsDate,
+          sortable: true
+        },
+        {
+          name: 'leadInformation',
+          required: true,
+          label: 'Device Type',
+          align: 'left',
+          field: row => row.device == null ? 'NA' : row.device.deviceName,
+          sortable: false
+        },
+        {
+          name: 'rejectedAt',
+          required: true,
+          label: 'Rejected At',
+          align: 'left',
+          field: row => row.marsReason == null ? 'NA' : row.marsReason,
+          sortable: false
+        },
+        {
+          name: 'reason',
+          required: true,
+          label: 'Reason',
+          align: 'left',
+          field: row => row.marsReason == null ? 'NA' : row.marsReason,
+          sortable: false
+        }
+      ],
+      currentDeviceInfo: {},
+      showDeviceAddressModal: false,
+      formData: {
+        marsDeviceIdsCooked: [],
+        marsDeviceIdsCookedUnAssinged: []
+      },
+      paginationControl: {
+        sortBy: 'createdAt',
+        descending: false,
+        page: 1,
+        rowsPerPage: 10
+      },
+      tableAjaxLoading: false
+    }
+  },
+  computed: {
+    ...mapGetters('varaneekImplementationQueue', [
+      'getrejectStatusList'
+    ]),
+    ...mapGetters('ImplementationExecutive', [
+      'getImplementationExecutiveList'
+    ]),
+    ...mapGetters('SuperAdminUsers', ['getAllStatesData'])
+  },
+  created () {
+    this.ajaxLoadAllLeadInfo({
+      pagination: this.paginationControl,
+      filter: this.filterSearch
+    })
+    this.getPincodeInformations()
+  },
+  methods: {
+    ...mapActions('varaneekImplementationQueue', [
+      'REJECT_STATUS_LIST'
+    ]),
+    ...mapActions('ImplementationExecutive', ['IMPLEMENTATION_EXECUTIVE_LIST']),
+    ...mapActions('SuperAdminUsers', ['FETCH_ALL_STATES_DATA']),
+
+    getPincodeInformations () {
+      this.FETCH_ALL_STATES_DATA()
+    },
+    ajaxLoadAllLeadInfo ({ pagination, filter }) {
+      this.$q.loading.show({
+        delay: 0,
+        spinnerColor: 'purple-9',
+        message: 'Fetching data ..'
+      })
+      this.REJECT_STATUS_LIST({ pagination, filter })
+        .then(() => {
+          this.IMPLEMENTATION_EXECUTIVE_LIST().then(() => {
+            const assumeArr = []
+            this.getImplementationExecutiveList.map(function (value) {
+              assumeArr.push({ label: value.name + ' | ' + value.employeeID + ' | ' + value.email, value: value.id })
+            })
+            this.assignToOptions = assumeArr
+          })
+          this.paginationControl = pagination
+          this.paginationControl.rowsNumber = this.getrejectStatusList.totalElements
+          this.paginationControl.page = this.getrejectStatusList.number + 1
+          this.tableData = this.getrejectStatusList.content
+          if (this.getrejectStatusList.sort != null) {
+            this.paginationControl.sortBy = this.getrejectStatusList.sort[0].property
+            this.paginationControl.descending = this.getrejectStatusList.sort[0].ascending
+          }
+          this.$q.loading.hide()
+        })
+        .catch(() => {
+          this.$q.loading.hide()
+        })
+    },
+
+    UpdateDeviceAddress (currentDeviceInfo) {
+      this.currentDeviceInfo = []
+      this.showDeviceAddressModal = !this.showDeviceAddressModal
+      if (this.formData.marsDeviceIdsCooked.length == 0) {
+        let assumeObj = {
+          id: [currentDeviceInfo.id],
+          marsDeviceAddress: {
+            deviceAddress: currentDeviceInfo.deviceAddress,
+            latitude: 0,
+            longitude: 0,
+            pincode: currentDeviceInfo.pincode,
+            city: currentDeviceInfo.city,
+            state: currentDeviceInfo.state
+          }
+        }
+        this.currentDeviceInfo = assumeObj
+      } else {
+        const marsDeviceIdsCooked = []
+        this.formData.marsDeviceIdsCooked.map(function (value) {
+          marsDeviceIdsCooked.push(value.id)
+        })
+        let assumeObj = {
+          id: marsDeviceIdsCooked,
+          marsDeviceAddress: {
+            deviceAddress: currentDeviceInfo.deviceAddress,
+            latitude: 0,
+            longitude: 0,
+            pincode: currentDeviceInfo.pincode,
+            city: currentDeviceInfo.city,
+            state: currentDeviceInfo.state
+          }
+        }
+        this.currentDeviceInfo = assumeObj
+      }
+    },
+    UpdateDeviceAddressAfterEmit (pagination) {
+      this.showDeviceAddressModal = !this.showDeviceAddressModal
+      this.paginationControl = pagination
+    },
+    toggleLeadInformation (leadDetails) {
+      this.propToggleLeadInformation = !this.propToggleLeadInformation
+      if (leadDetails != undefined) {
+        this.addtnLeadInformation = leadDetails
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.customTd {
+  text-align: left !important;
+  word-wrap: break-word;
+  white-space: normal;
+}
+.customTd.customCellLength {
+  min-width: 300px !important;
+  overflow-x: auto;
+}
+</style>

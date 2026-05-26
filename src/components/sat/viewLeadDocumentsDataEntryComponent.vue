@@ -1,0 +1,461 @@
+<template>
+  <div>
+    <q-list no-border class="no-padding">
+      <!-- START >> (Mandatory) Application form  -->
+      <q-expansion-item
+        separator
+        default-opened
+        :group="toggleCollapsible"
+        @hide="functionToggleCollapsible"
+        multiline
+        class="full-width"
+        icon="attach_file"
+        label="Application form"
+      >
+        <q-item v-if="showDocumentPreview && propGetShortInfo" separator class="q-body-1">
+          <q-item-section v-if="propGetShortInfo?.applicationFileMimeType?.includes('pdf')">
+            <div @click="fnDocumentUrl(propGetShortInfo?.applicationFile)" class="ellipsis">
+              <q-btn round size="sm" icon="fas fa-file-pdf" color="primary" />
+              &nbsp;{{propGetShortInfo?.applicationFile}}
+            </div>
+          </q-item-section>
+          <q-item-section v-if="propGetShortInfo?.applicationFileMimeType?.includes('image')">
+            <!-- START >>If document type is image format -->
+            <div
+              class="images"
+              v-viewer="{minWidth:0,minHeight:0,inline:true,scalable:true,button:true,movable:true}"
+            >
+              <img
+                :src="GLOBAL_FILE_FETCH_URL+'/'+propGetShortInfo?.applicationFile"
+                alt="Picture"
+                style="max-width:100%"
+              />
+            </div>
+            <!-- END >>If document type is image format -->
+          </q-item-section>
+        </q-item>
+      </q-expansion-item>
+      <!-- END >> (Mandatory) Application form  -->
+      <!-- START >>Loop through cooked(in store) array for documents -->
+      <!-- START >> (Not Mandatory) Other attached documents  -->
+      <q-item
+        class="no-padding"
+        v-if="propLeadDocumentInformation && Object.keys(propLeadDocumentInformation).length > 0 && showDocumentPreview"
+      >
+        <q-item-section>
+          <div v-for="(documents,index) in propLeadDocumentInformation" :key="index">
+            <!-- START >> View type is 0, direct documents  will be visible -->
+           
+            <div
+              class="row items-center full-width"
+              v-if="documents && documents.length > 0 && index.toString() == documents[0].subDocumentType"
+            >
+              <div class="col-md-12 q-body-1">
+                <q-expansion-item
+                  separator
+                  opened
+                  :group="toggleCollapsible"
+                  @hide="functionToggleCollapsible"
+                  :ref="'singleImageIndex'+index"
+                  multiline
+                  class="full-width"
+                >
+                  <template v-slot:header>
+                    <q-item-section side  ><q-icon :color="documents[0]?.kycException?'amber-9':''" :name="documents[0]?.kycException? 'warning' :'attach_file'" /></q-item-section>
+                    <q-item-section class="q-body-1"><q-item-label>{{ index }}</q-item-label><q-item-label caption>{{ (documents[0]?.uploadedDocuments?.length || 0) + ' Document(s)' }}</q-item-label></q-item-section>
+                    <q-item-section v-if="documents[0]?.documentVerifiedStatus == 2" side>
+                      <q-btn
+                        round
+                        size="xs"
+                        class="q-ma-xs"
+                        color="green"
+                        icon="fas fa-check"
+                        @click="fnDocumentApproveModal(documents[0])"
+                      />
+                      <q-btn
+                        round
+                        size="xs"
+                        class="q-ma-xs"
+                        color="red"
+                        icon="fas fa-times"
+                        @click="fnDocumentRejectModal(documents[0])"
+                      />
+                    </q-item-section>
+                    <q-item-section v-else side>
+                      <span
+                        v-if="documents[0]?.documentVerifiedStatus == 1"
+                        class="q-body-1 text-weight-medium text-positive"
+                      >Approved</span>
+                      <span
+                        v-if="documents[0]?.documentVerifiedStatus == 3"
+                        class="q-body-1 text-weight-medium text-negative"
+                      >Rejected</span>
+                    </q-item-section>
+                  </template>
+                  <div v-if="documents[0]?.uploadedDocuments && documents[0].uploadedDocuments.length > 0">
+                    <q-item
+                      v-for="(item,subIndex) in documents[0].uploadedDocuments"
+                      :key="subIndex"
+                      separator
+                      class="q-body-1"
+                    >
+                      <q-item-section
+                        @click="fnDocumentUrl(item.fileName)"
+                        v-if="item?.mimeType?.includes('application')"
+                        class="ellipsis"
+                      >
+                        <div class="row items-center">
+                          <q-btn round size="sm" icon="fas fa-file-pdf" color="primary" />
+                          &nbsp;{{item.fileName}}
+                        </div>
+                      </q-item-section>
+                      <q-item-section v-else-if="item?.mimeType?.includes('image')">
+                        <!-- START >>If document type is image format -->
+                        <div
+                          class="images"
+                          v-viewer="{minWidth:0,minHeight:0,inline:true,scalable:true,button:true,movable:true}"
+                        >
+                          <img
+                            :src="GLOBAL_FILE_FETCH_URL+'/'+item.fileName"
+                            alt="Picture"
+                            style="max-width:100%"
+                          />
+                        </div>
+                        <!-- END >>If document type is image format -->
+                      </q-item-section>
+                      <q-item-section v-else>Invalid document type/ No document available</q-item-section>
+                    </q-item>
+                  </div>
+                  <div v-else>No document available</div>
+                </q-expansion-item>
+              </div>
+            </div>
+            <!-- END >> View type is 0, direct documents  will be visible -->
+            <!-- START >> View type is 1, Category has sub category, hence defined in else part -->
+            <div class="row items-center full-width" v-else>
+              <div class="col-md-12 q-body-1">
+                <q-expansion-item separator opened :group="toggleCollapsible" class="full-width">
+                  <template v-slot:header>
+                    <q-item-section side ><q-icon name="apps" /></q-item-section>
+                    <q-item-section class="q-body-1"><q-item-label>{{ index }}</q-item-label><q-item-label caption>{{ (documents?.length || 0) + ' Type(s)' }}</q-item-label></q-item-section>
+                    <q-item-section v-if="documents && documents.length > 0 && fnToggleVerificationButtonStatus(documents)" side>
+                      <q-btn
+                        round
+                        size="xs"
+                        class="q-ma-xs"
+                        color="green"
+                        icon="fas fa-check"
+                        @click="fnDocumentApproveModal(documents[0])"
+                      />
+                      <q-btn
+                        round
+                        size="xs"
+                        class="q-ma-xs"
+                        color="red"
+                        icon="fas fa-times"
+                        @click="fnDocumentRejectModal(documents[0])"
+                      />
+                    </q-item-section>
+                    <q-item-section v-else side>
+                      <span
+                        v-if="fnToggleVerificationButtonStatusAfterAction(documents)"
+                        class="q-body-1 text-weight-medium text-positive"
+                      >Approved</span>
+                      <span
+                        v-else-if="fnToggleVerificationButtonStatusAfterActionRejection(documents)"
+                        class="q-body-1 text-weight-medium text-negative"
+                      >Rejected</span>
+                      <span v-else></span>
+                    </q-item-section>
+                  </template>
+                  <div
+                    class="row items-center full-width"
+                    v-for="(subDocument,subIndex) in documents"
+                    :key="subIndex"
+                  >
+                    <div class="col-md-12 q-body-1">
+                      <q-expansion-item separator opened multiline class="full-width">
+                        <template v-slot:header>
+                          <q-item-section side  ><q-icon :color="subDocument.kycException?'amber-9':''" :name="subDocument.kycException? 'warning' :'attach_file'" /></q-item-section>
+                          <q-item-section class="q-body-1"><q-item-label>{{ subDocument?.subDocumentType }}</q-item-label><q-item-label caption>{{ (subDocument?.uploadedDocuments?.length || 0) + ' Document(s)' }}</q-item-label></q-item-section>
+                          <q-item-section v-if="subDocument?.documentVerifiedStatus == 2" side>
+                            <q-btn
+                              round
+                              size="xs"
+                              class="q-ma-xs"
+                              color="green"
+                              icon="fas fa-check"
+                              @click="fnDocumentApproveModal(subDocument)"
+                            />
+                            <q-btn
+                              round
+                              size="xs"
+                              class="q-ma-xs"
+                              color="red"
+                              icon="fas fa-times"
+                              @click="fnDocumentRejectModal(subDocument)"
+                            />
+                          </q-item-section>
+                          <q-item-section v-else side class="desktop-only cordova-only">
+                            <span
+                              v-if="subDocument?.documentVerifiedStatus == 1"
+                              class="q-body-1 text-weight-medium text-positive"
+                            >Approved</span>
+                            <span
+                              v-if="subDocument?.documentVerifiedStatus == 3"
+                              class="q-body-1 text-weight-medium text-negative"
+                            >Rejected</span>
+                          </q-item-section>
+                        </template>
+                        <div v-if="subDocument?.uploadedDocuments && subDocument.uploadedDocuments.length > 0">
+                          <q-item
+                            v-for="(item,subIndex) in subDocument.uploadedDocuments"
+                            :key="subIndex"
+                            separator
+                            class="q-body-1"
+                          >
+                            <q-item-section
+                              @click="fnDocumentUrl(item.fileName)"
+                              v-if="item?.mimeType?.includes('application')"
+                              class="ellipsis"
+                            >
+                              <div class="row items-center">
+                                <q-btn round size="sm" icon="fas fa-file-pdf" color="primary" />
+                                &nbsp;{{item.fileName}}
+                              </div>
+                            </q-item-section>
+                            <q-item-section v-else-if="item?.mimeType?.includes('image')">
+                              <!-- START >>If document type is image format -->
+                              <div
+                                class="images"
+                                v-viewer="{minWidth:0,minHeight:0,inline:true,scalable:true,button:true,movable:true}"
+                              >
+                                <img
+                                  :src="GLOBAL_FILE_FETCH_URL+'/'+item.fileName"
+                                  alt="Picture"
+                                  style="max-width:100%"
+                                />
+                              </div>
+                              <!-- END >>If document type is image format -->
+                            </q-item-section>
+                            <q-item-section v-else>Invalid document type/ No document available</q-item-section>
+                          </q-item>
+                        </div>
+                        <div v-else>No document available</div>
+                      </q-expansion-item>
+                    </div>
+                  </div>
+                </q-expansion-item>
+              </div>
+            </div>
+            <!-- END >> View type is 1, Category has sub category, hence defined in else part -->
+          </div>
+        </q-item-section>
+      </q-item>
+      <!-- END >>Loop through cooked(in store) array for documents -->
+      <!-- END >> (Not Mandatory) Other attached documents  -->
+      <div class="col-md-5 q-pa-xs group" v-if="!showDocumentPreview">
+        <div>
+          <vuePdfjs
+            :url="GLOBAL_FILE_FETCH_URL+'/'+populatedDocumentUrl"
+            :type="0"
+            :height="'500px'"
+          ></vuePdfjs>
+        </div>
+        <div>
+          <q-btn
+            label="Close Preview"
+            icon="clear"
+            class="common-dark-blue"
+            @click="fnCloseDocumentPreview"
+          />
+        </div>
+      </div>
+    </q-list>
+
+    <!-- START >> COMPONENT: Document reject  -->
+    <showDocumentLeadApproveComponent
+      v-if="toggleLeadDocumentApproveModal"
+      :propToggleDocumentApproveModal="toggleLeadDocumentApproveModal"
+      :propDocumentDetails="documentApproveTempArr"
+      @toggleDocumentModal="fnDocumentApproveModalAfterEmit"
+    ></showDocumentLeadApproveComponent>
+    <!-- END >> COMPONENT: Document approve -->
+    <!-- START >> COMPONENT: Document reject  -->
+    <showDocumentLeadRejectComponent
+      v-if="toggleLeadDocumentRejectModal"
+      :propToggleDocumentRejectModal="toggleLeadDocumentRejectModal"
+      :propDocumentDetails="documentRejectTempArr"
+      @toggleDocumentModal="fnDocumentRejectModalAfterEmit"
+    ></showDocumentLeadRejectComponent>
+    <!-- END >> COMPONENT: Document reject -->
+    <!-- START >> COMPONENT: View PDF  -->
+    <showPdfModalComponent
+      v-if="toggleshowPDFModal"
+      :propToggleshowPDFModal="toggleshowPDFModal"
+      :propPDFDetails="PDFDetails"
+      @togglePDFModal="fnPDFViewModal"
+    ></showPdfModalComponent>
+    <!-- END >> COMPONENT: View PDF -->
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+import "viewerjs/dist/viewer.css";
+import vuePdfjs from "vue-pdfjs";
+
+import showDocumentLeadApproveComponent from "../../components/sat/showDocumentLeadApproveComponent.vue";
+import showDocumentLeadRejectComponent from "../../components/sat/showDocumentLeadRejectComponent.vue";
+import showPdfModalComponent from "../../components/sat/showPdfModalComponent.vue";
+
+export default {
+  name: "viewLeadDocumentsComponent",
+  props: ["propLeadDocumentInformation", "propGetShortInfo"],
+
+  components: {
+    vuePdfjs,
+    showDocumentLeadApproveComponent,
+    showDocumentLeadRejectComponent,
+    showPdfModalComponent
+  },
+
+  data() {
+    return {
+      toggleCollapsible: "",
+      showDocumentPreview: true,
+      populatedDocumentUrl: "",
+
+      propToggleLeadInformation: false,
+      addtnLeadInformation: null,
+
+      showOpenPaymentChequeDocumentInfo: false,
+      PDFDetails: null,
+      toggleshowPDFModal: false,
+
+      merchantTypeSelection: 0,
+      subDocumentTypeSelection: 0,
+
+      //Component properties
+      toggleLeadDocumentApproveModal: false,
+      toggleLeadDocumentRejectModal: false,
+      toggleshowPDFModal: false,
+      PDFDetails: null,
+
+      documentApproveTempArr: [],
+      documentRejectTempArr: [],
+      rejectTempArr: []
+      //Component properties
+    };
+  },
+  computed: {
+    ...mapGetters("GlobalVariables", ["GLOBAL_FILE_FETCH_URL"])
+  },
+  //   mounted(){
+  //     this.$el.querySelector(".images").$viewer.show();
+  //   },
+
+  methods: {
+    functionToggleCollapsible() {
+      this.toggleCollapsible = "toggleCollapsible";
+    },
+    // show() {
+    //   let viewer = this.$el.querySelector(".images").$viewer;
+    //   viewer.show();
+    // },
+    // showSingleItem(index) {
+    //   let viewer = this.$el.querySelector(".singleItemImage").$viewer;
+    //   viewer.show();
+    // },
+    fnViewHandedOverFileImage() {
+      this.$refs.handedOverImageViewer.click();
+    },
+
+    // Function to approve document with reason
+    fnDocumentApproveModal(documentDetails) {
+      this.toggleLeadDocumentApproveModal = !this
+        .toggleLeadDocumentApproveModal;
+      documentDetails["leadId"] = this.$route.params.id;
+      this.documentApproveTempArr = documentDetails;
+    },
+
+    // Function to reject document with reason
+    fnDocumentRejectModal(documentDetails) {
+      this.toggleLeadDocumentRejectModal = !this.toggleLeadDocumentRejectModal;
+      documentDetails["leadId"] = this.$route.params.id;
+      this.documentRejectTempArr = documentDetails;
+    },
+
+    // Function to approve document with reason
+    fnDocumentApproveModalAfterEmit(leadId) {
+      this.toggleLeadDocumentApproveModal = !this
+        .toggleLeadDocumentApproveModal;
+      this.$emit("emitTriggerComponentHotLoad", leadId);
+    },
+
+    // Function to approve document with reason
+    fnDocumentRejectModalAfterEmit(leadId) {
+      this.toggleLeadDocumentRejectModal = !this.toggleLeadDocumentRejectModal;
+      this.$emit("emitTriggerComponentHotLoad", leadId);
+    },
+
+    fnToggleVerificationButtonStatus(document) {
+      if (!document) return false;
+      let assumeArr = _.filter(document, function(value) {
+        // >> 2 is document verification pending
+        return value?.kycException === true && value?.documentVerifiedStatus == 2;
+      });
+      if (assumeArr.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    fnToggleVerificationButtonStatusAfterAction(document) {
+      if (!document) return false;
+      let assumeArr = _.filter(document, function(value) {
+        // >> 1 is document verification approved
+        return value?.kycException === true && value?.documentVerifiedStatus == 1;
+      });
+      if (assumeArr.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    fnToggleVerificationButtonStatusAfterActionRejection(document) {
+      if (!document) return false;
+      let assumeArr = _.filter(document, function(value) {
+        // >> 3 is document verification approved
+        return value?.kycException === true && value?.documentVerifiedStatus == 3;
+      });
+      if (assumeArr.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    // Function to show PDF
+    fnPDFViewModal(documentUrl) {
+      this.PDFDetails = documentUrl;
+      this.toggleshowPDFModal = !this.toggleshowPDFModal;
+    },
+
+    fnDocumentUrl(documentUrl) {
+      this.populatedDocumentUrl = documentUrl;
+      this.showDocumentPreview = !this.showDocumentPreview;
+    },
+    fnImageUrl(imageUrl) {
+      this.populatedimageUrl = imageUrl;
+      this.showimageUrlPreview = !this.showimageUrlPreview;
+    },
+    fnCloseDocumentPreview() {
+      this.showDocumentPreview = !this.showDocumentPreview;
+    }
+  }
+};
+</script>
+
+<style>
+</style>

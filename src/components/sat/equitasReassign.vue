@@ -1,0 +1,204 @@
+<template>
+  <q-page>
+    <q-dialog
+      v-model="toggleModel"
+      no-backdrop-dismiss
+      @hide="emitfnshowUpdateOpenedExternal()"
+      persistent
+    >
+      <q-card style="padding: 50px; min-width: 30vw;">
+        <div class="row">
+          <div class="col-12 q-title q-pa-md text-weight-regular bottom-border">
+            RE-Assign
+          </div>
+
+          <!-- START >> Setup MDR details -->
+          <div class="col-md-5 col-sm-4 col-xs-12 q-pa-sm">
+            <q-card style="width: 250%">
+              <q-card-section>
+                <q-list no-border>
+                  <div class="col-md-12">
+                    <q-select
+                      use-input
+                      fill-input
+                      hide-selected
+                      clearable
+                      emit-value
+                      map-options
+                      color="grey-9"
+                      v-model="formData.so"
+                      :options="assignToOptions"
+                      label="Select SO*"
+                    />
+                  </div>
+                  <div class="col-md-12">
+                    <q-select
+                      emit-value
+                      map-options
+                      color="grey-9"
+                      v-model="formData.Reassign"
+                      :options="ReasonListOptions"
+                      label="Select Reason List*"
+                    />
+                  </div>
+                  <div v-if="formData.Reassign == 'Other reason'">
+                    <q-input
+                      type="textarea"
+                      placeholder="Reason Type.."
+                      class="q-my-md"
+                      color="grey-9"
+                      align="left"
+                      v-model="formData.reason"
+                    />
+                  </div>
+                </q-list>
+              </q-card-section>
+
+              <q-card-actions align="end">
+                <q-btn
+                  flat
+                  align="right"
+                  class="bg-white text-weight-regular text-grey-8"
+                  @click="emitfnshowUpdateOpenedExternal()"
+                >Cancel</q-btn>
+                <q-btn
+                  label="submit"
+                  @click="fnEDITREOPEN(formData)"
+                  color="purple-9"
+                />
+              </q-card-actions>
+            </q-card>
+          </div>
+          <!-- END >> Setup MDR details -->
+        </div>
+      </q-card>
+    </q-dialog>
+  </q-page>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  props: ["propShowReassign", "propRowDetails"],
+  name: "MDRdetails",
+
+  data() {
+    return {
+      toggleModel: this.propShowReassign,
+      showLeadSourceModal: false,
+      showDeviceDetailModal: false,
+      showMerchantModal: false,
+      assignToOptions: [],
+      ReasonListOptions: [],
+      formData: {
+        so: "",
+        Reassign: "",
+        reason: ""
+      },
+    };
+  },
+
+  beforeMount() {
+    console.log("propRowDetails ------->", JSON.stringify(this.propRowDetails));
+    this.implementationExecutiveList();
+    this.ReassignReasonList();
+  },
+
+  computed: {
+    ...mapGetters("ImplementationExecutive", ["getImplementationExecutiveList"]),
+    ...mapGetters("reassignReasonList", ["getreassignReasonList"])
+  },
+
+  methods: {
+    ...mapActions("ImplementationExecutive", ["IMPLEMENTATION_EXECUTIVE_LIST"]),
+    ...mapActions("reassignReasonList", ["REASSIGN_REASON_LIST"]),
+    ...mapActions("DeviceReplacement", ["EQUITAS_SOUNDBOX_REASSIGNED_REASON_TYPE_DETAILS"]),
+
+    emitfnshowUpdateOpenedExternal() {
+      this.$emit("emitfnshowUpdateOpenedExternal");
+    },
+
+    fnEDITREOPEN(request) {
+      this.$q.dialog({
+          title: "Confirm",
+          message: "Are you sure want to reAssign the lead?",
+          ok: "Continue",
+          cancel: "Cancel"
+        })
+        .onOk(() => {
+          this.$q.loading.show({
+            delay: 0,
+            spinnerColor: "purple-9",
+            message: "Processing .."
+          });
+          let marsDeviceIds = [];
+          marsDeviceIds.push(this.propRowDetails.id);
+          let param = {
+            userId: request.so,
+            marsDeviceIds: {
+              marsDeviceIds: marsDeviceIds,
+              remarks: this.formData.reason,
+              reason: this.formData.Reassign
+            },
+          };
+          this.EQUITAS_SOUNDBOX_REASSIGNED_REASON_TYPE_DETAILS(param)
+            .then(() => {
+              this.$emit("emitfnshowUpdateOpenedExternal");
+              this.$q.loading.hide();
+              this.$q.notify({
+                color: "positive",
+                position: "bottom",
+                message: "Updated Successfully",
+                icon: "thumb_up"
+              });
+            })
+            .catch(error => {
+              this.$q.loading.hide();
+              this.$q.notify({
+                color: "negative",
+                position: "bottom",
+                message: error.body.message == null ? "Please Try Again Later !" : error.body.message,
+                icon: "thumb_down"
+              });
+            });
+        })
+        .onCancel(() => {
+          this.$q.notify({
+            color: "negative",
+            position: "bottom",
+            message: "No changes made!",
+            icon: "thumb_down"
+          });
+        });
+    },
+
+    implementationExecutiveList() {
+      this.IMPLEMENTATION_EXECUTIVE_LIST().then(response => {
+        let assumeArr = [];
+        this.getImplementationExecutiveList.map(function(value) {
+          assumeArr.push({
+            label: value.name + " | " + value.employeeID + " | " + value.email,
+            value: value.id
+          });
+        });
+        this.assignToOptions = assumeArr;
+      });
+    },
+
+    ReassignReasonList() {
+      this.REASSIGN_REASON_LIST().then(response => {
+        console.log("REASSIGN_REASON_LIST ------->", JSON.stringify(response));
+        let assume = [];
+        this.getreassignReasonList.map(function(value) {
+          assume.push({ label: value.name, value: value.name });
+        });
+        this.ReasonListOptions = assume;
+      });
+    }
+  }
+};
+</script>
+
+<style>
+</style>
