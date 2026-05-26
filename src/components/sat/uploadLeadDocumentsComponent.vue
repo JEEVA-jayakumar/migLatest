@@ -213,12 +213,12 @@
 
                 <q-item-section side>
                   <q-btn
-                    size="sm"
-                    flat
+                    size="xs"
                     round
-                    icon="delete"
-                    @click="fnDeleteAlreadyAttachedFile(filesAttachedEarlier)"
                     color="negative"
+                    icon="clear"
+                    label="Remove"
+                    @click="fnDeleteAlreadyAttachedFile(filesAttachedEarlier)"
                   />
                 </q-item-section>
                   </q-item>
@@ -338,12 +338,12 @@
               </q-item-section>
               <q-item-section side>
                 <q-btn
-                  size="sm"
-                  flat
+                  size="xs"
                   round
-                  icon="delete"
-                  @click="fnDeleteAlreadyAttachedFile(filesAttachedEarlier)"
                   color="negative"
+                  icon="clear"
+                  label="Remove"
+                  @click="fnDeleteAlreadyAttachedFile(filesAttachedEarlier)"
                 />
               </q-item-section>
             </q-item>
