@@ -1,5 +1,19 @@
 <template>
-  <router-view />
+  <router-view v-slot="{ Component, route }">
+    <transition
+      appear
+      @before-enter="beforeEnter"
+      @enter="enter"
+      @after-enter="afterEnter"
+      mode="out-in"
+      enter-active-class="animated fadeIn"
+      leave-active-class="animated fadeOut"
+    >
+      <div :key="route.path" v-if="Component">
+        <component :is="Component" />
+      </div>
+    </transition>
+  </router-view>
 </template>
 
 <script>

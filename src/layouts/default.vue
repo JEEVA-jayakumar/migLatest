@@ -44,7 +44,7 @@
     </q-drawer>
 
     <q-page-container class="bg-grey-2">
-      <customBody :key="$route.fullPath" />
+      <customBody />
     </q-page-container>
   </q-layout>
 </template>
