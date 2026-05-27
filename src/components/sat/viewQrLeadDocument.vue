@@ -987,7 +987,7 @@
                               </q-item-label>
                             </q-item-section>
 
-                            <q-item-section>
+                            <q-item-section side>
                               <q-btn
                                 size="xs"
                                 icon="clear"
@@ -998,7 +998,6 @@
                                 "
                                 round
                                 color="negative"
-                                label="Remove"
                               />
                             </q-item-section>
                           </q-item>
@@ -1175,7 +1174,7 @@
                                 </div>
                               </q-item-label>
                             </q-item-section>
-                            <q-item-section>
+                            <q-item-section side>
                               <q-btn
                                 size="xs"
                                 icon="clear"
@@ -1186,7 +1185,6 @@
                                 "
                                 round
                                 color="negative"
-                                label="Remove"
                               />
                             </q-item-section>
                           </q-item>
@@ -1345,7 +1343,7 @@
                               </q-item-label>
                             </q-item-section>
 
-                            <q-item-section>
+                            <q-item-section side>
                               <q-btn
                                 size="xs"
                                 icon="clear"
@@ -1356,7 +1354,6 @@
                                 "
                                 round
                                 color="negative"
-                                label="Remove"
                               />
                             </q-item-section>
                           </q-item>
@@ -1533,7 +1530,7 @@
                                 </div>
                               </q-item-label>
                             </q-item-section>
-                            <q-item-section>
+                            <q-item-section side>
                               <q-btn
                                 size="xs"
                                 icon="clear"
@@ -1544,7 +1541,6 @@
                                 "
                                 round
                                 color="negative"
-                                label="Remove"
                               />
                             </q-item-section>
                           </q-item>

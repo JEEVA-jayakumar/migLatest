@@ -250,14 +250,13 @@
                   </q-item-label>
                 </q-item-section>
                 <!-- <pre>{{attachedSubFile}}</pre> -->
-                <q-item-section v-if="attachedSubFile.documentVerifiedStatus == 4">
+                <q-item-section side v-if="attachedSubFile.documentVerifiedStatus == 4">
                   <q-btn
                     size="xs"
                     icon="clear"
                     @click="fnDeleteAlreadyAttachedFile(filesAttachedEarlier)"
                     round
                     color="negative"
-                    label="Remove"
                   />
                 </q-item-section>
               </q-item>
@@ -430,14 +429,13 @@
                   </div>
                 </q-item-label>
               </q-item-section>
-              <q-item-section v-if="attachedSubFile.documentVerifiedStatus == 4">
+              <q-item-section side v-if="attachedSubFile.documentVerifiedStatus == 4">
                 <q-btn
                   size="xs"
                   icon="clear"
                   @click="fnDeleteAlreadyAttachedFile(filesAttachedEarlier)"
                   round
                   color="negative"
-                  label="Remove"
                 />
               </q-item-section>
               <!-- END >> Will be displayed if reprocess key => true -->
