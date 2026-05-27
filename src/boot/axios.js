@@ -25,7 +25,6 @@ export default boot(({ app, router }) => {
     }
     config.headers["Accept"] = "application/json, text/plain, */*";
     config.headers["X-Requested-With"] = "XMLHttpRequest";
-    config.headers["Access-Control-Allow-Origin"] = "*";
     config.headers["X-Frame-Options"] = "SAMEORIGIN";
 
     const isAuthEndpoint = config.url.includes("authorization/login") || config.url.includes("authorization/password");
