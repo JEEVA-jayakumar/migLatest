@@ -5997,6 +5997,7 @@ import { useVuelidate } from '@vuelidate/core';
  future: addToDate(today, { days: 0 }),
  check: "",
  showPartnerstab: false,
+	 _isMounted: false,
  vasDisableFlag: false,
  showAxistab: false,
  ifscErrFlag: false,
@@ -11844,6 +11845,7 @@ import { useVuelidate } from '@vuelidate/core';
  },
  },
  mounted() {
+	 this._isMounted = true;
  // this.loadPreData();
  //LEAD_STATUS_MARS_SUB_TID_PENDING 104
  //LEAD_STATUS_BASE_TID_PENDING 103
@@ -11853,6 +11855,9 @@ import { useVuelidate } from '@vuelidate/core';
  // this.OpenMultiTidToggle();
  // }
  },
+	 beforeUnmount() {
+	 this._isMounted = false;
+	 },
  created() {
  this.fetchAllZone();
  this.fetchAllDistrict();
@@ -11966,6 +11971,7 @@ import { useVuelidate } from '@vuelidate/core';
  loadSubTidList() {
  this.GET_BASE_TID_LIST(this.merchant)
  .then((response) => {
+      if (!this._isMounted) return;
  if (response.status == 200) {
  this.$q.notify({
  color: "positive",
@@ -12024,6 +12030,7 @@ import { useVuelidate } from '@vuelidate/core';
  fnCreateOrGetBaseTid() {
  this.CREATE_BASE_TID(this.merchant)
  .then((response) => {
+      if (!this._isMounted) return;
  if (response.status == 200) {
  this.$q.notify({
  color: "positive",
@@ -12064,6 +12071,7 @@ import { useVuelidate } from '@vuelidate/core';
  //load sub tids if created already
  this.GET_SUB_TID_LIST(this.merchant)
  .then((response) => {
+      if (!this._isMounted) return;
  if (response.status == 200) {
  this.$q.notify({
  color: "positive",
@@ -12092,6 +12100,7 @@ import { useVuelidate } from '@vuelidate/core';
  // create sub tids
  this.CREATE_SUB_TIDS_LIST(this.merchant)
  .then((response) => {
+      if (!this._isMounted) return;
  if (response.status == 200) {
  this.$q.notify({
  color: "positive",
@@ -12143,6 +12152,7 @@ import { useVuelidate } from '@vuelidate/core';
  updateLeadStatus(request) {
  this.SAVEING_THE_LEAD_STATUS_DETAILS(request)
  .then((response) => {
+      if (!this._isMounted) return;
  if (response.status == 200) {
  this.$q.notify({
  color: "positive",
@@ -12221,6 +12231,7 @@ import { useVuelidate } from '@vuelidate/core';
  self
  .IFSC_FROM_MARS(this.merchant.bankInformation.bankDetails.ifsc)
  .then((response) => {
+      if (!self._isMounted) return;
  if (response.status == 200) {
  this.merchant.bankInformation.bankDetails.bankName =
  self.ifscFromMars.bankName;
@@ -12320,6 +12331,7 @@ import { useVuelidate } from '@vuelidate/core';
  // leadsource: this.merchant.salesInformation.leadFrom
  // };
  // this.FECTCH_MCC_BASED_LEADSOURCE(formData).then(response => {
+      if (!this._isMounted) return;
  // this.$q.notify({
  // color: "positive",
  // position: "bottom",
@@ -12372,6 +12384,7 @@ import { useVuelidate } from '@vuelidate/core';
  // deviceType: this.merchant.paymentDetails.terminalModeCode
  // };
  // this.FECTCH_MCC_BASED_LEADSOURCE(formData).then(response => {
+      if (!this._isMounted) return;
  // // this.$q.notify({
  // // color: "positive",
  // // position: "bottom",
@@ -12396,6 +12409,7 @@ import { useVuelidate } from '@vuelidate/core';
  // deviceType: this.merchant.paymentDetails.terminalModeCode
  // };
  // this.FECTCH_MCC_BASED_LEADSOURCE(formData).then(response => {
+      if (!this._isMounted) return;
  // // this.$q.notify({
  // // color: "positive",
  // // position: "bottom",
@@ -12925,6 +12939,7 @@ import { useVuelidate } from '@vuelidate/core';
  device: this.propLeadDeatils.device.id,
  };
  self.GET_LS_AND_DEVICE_BASED_VAS_DETAILS(params1).then((response) => {
+      if (!self._isMounted) return;
  // if (response.status == 200) {
  self.getLsDeviceBasedVasDetails.vasList.map(function (value, key) {
  vasArr.push({
@@ -12936,6 +12951,7 @@ import { useVuelidate } from '@vuelidate/core';
  });
  } else {
  self.FETCH_INSTANCE(params).then((response) => {
+      if (!self._isMounted) return;
  if (response.status == 200) {
  self.getInstance.map(function (value, key) {
  vasArr.push({
@@ -13068,6 +13084,7 @@ import { useVuelidate } from '@vuelidate/core';
  });
 
  this.MOVE_BACK_DOCUMENT_VERIFICATION_STAGE(formData).then(() => {
+      if (!this._isMounted) return;
  this.$router.push("/sat/lead/validation/" + this.$route.params.id);
  this.$q.loading.hide();
  });
@@ -13084,6 +13101,7 @@ import { useVuelidate } from '@vuelidate/core';
  plan: this.getShortLeadInfo.plan.id,
  };
  this.DEVICE_MODEL_FROM_MARS(param).then((response) => {
+      if (!this._isMounted) return;
  let obj = response.data.data.marsDeviceModel;
  this.terminalModelSet = [];
  this.terminalModelSet.push({
@@ -13098,6 +13116,7 @@ import { useVuelidate } from '@vuelidate/core';
       if (institutionCode) {
         localStorage.setItem("aa_t", institutionCode);
       }
+      if (!this._isMounted) return;
  this.$q.loading.show({
  delay: 0, // ms
  spinnerColor: "purple-9",
@@ -13108,13 +13127,16 @@ import { useVuelidate } from '@vuelidate/core';
  self
  .REGION_FROM_MARS(institutionCode)
  .then(() => {
+      if (!self._isMounted) return;
  self.regionOptions = [];
  return self.regionsFromMars.items.map((oo) => {
  self.regionOptions.push({ label: oo.name, value: oo.code });
  });
  }).then(() => {
+      if (!self._isMounted) return;
  /* API call to fetch sharing partner */
  return self.LEAD_FROM_FROM_MARS(institutionCode).then((response) => {
+      if (!self._isMounted) return;
  self.leadFromOptions = [];
  if (
  JSON.parse(localStorage.getItem("u_i")).region.regionAreaName ==
@@ -13134,10 +13156,12 @@ import { useVuelidate } from '@vuelidate/core';
  this.propLeadDeatils.leadSource.sourceName;
  });
  }).then(() => {
+      if (!self._isMounted) return;
  /* API call to fetch sales person */
  return self
  .SALES_PERSON_FROM_MARS(institutionCode)
  .then((response) => {
+      if (!self._isMounted) return;
  self.salesPersonOptions = [
  {
  label: this.salesPerson + "-" + this.salesCode,
@@ -13155,8 +13179,10 @@ import { useVuelidate } from '@vuelidate/core';
  // self.salesPersonOptions = salesPerson;
  });
  }).then(() => {
+      if (!this._isMounted) return;
  /* API call to fetch city */
  return self.CITY_FROM_MARS().then((response) => {
+      if (!this._isMounted) return;
  self.cityOptions = [];
  self.cityFromMars.items.map((oo) => {
  self.cityOptions.push({ label: oo.name, value: oo.code });
@@ -13164,8 +13190,10 @@ import { useVuelidate } from '@vuelidate/core';
  // self.cityOptions = city;
  });
  }).then(() => {
+      if (!this._isMounted) return;
  /* API call to fetch state */
  return self.STATE_FROM_MARS().then((response) => {
+      if (!this._isMounted) return;
  self.stateOptions = [];
  self.stateFromMars.items.map((oo) => {
  self.stateOptions.push({ label: oo.name, value: oo.code });
@@ -13173,8 +13201,10 @@ import { useVuelidate } from '@vuelidate/core';
  // self.stateOptions = stateArr;
  });
  }).then(() => {
+      if (!this._isMounted) return;
  /* API call to fetch state */
  return self.MCC_FROM_MARS().then((response) => {
+      if (!this._isMounted) return;
  self.mccSearchSet = [];
  self.mccFromMars.items.map((oo) => {
  self.mccSearchSet.push({
@@ -13193,10 +13223,12 @@ import { useVuelidate } from '@vuelidate/core';
  // self.mccSearchSet = mccSubArr;
  });
  }).then(() => {
+      if (!this._isMounted) return;
  /* API call to fetch rental plan */
  return self
  .RENTAL_PLAN_FROM_MARS(institutionCode)
  .then((response) => {
+      if (!this._isMounted) return;
  self.rentalPlanSet = [];
  self.rentalPlanFromMars.items.map((oo) => {
  self.rentalPlanSet.push({ label: oo.name, value: oo.code });
@@ -13204,8 +13236,10 @@ import { useVuelidate } from '@vuelidate/core';
  // self.rentalPlanSet = rentalPlan;
  });
  }).then(() => {
+      if (!this._isMounted) return;
  /* API call to fetch bank list */
  return self.BANK_LIST_FROM_MARS(institutionCode).then((response) => {
+      if (!this._isMounted) return;
  // let bankList = [];
  self.bankListFromMars.bankNames.map((oo) => {
  self.bankListSet.push({ label: oo, value: oo });
@@ -13214,8 +13248,10 @@ import { useVuelidate } from '@vuelidate/core';
  });
  return true;
  }).then(() => {
+      if (!this._isMounted) return;
  /* API call to fetch bank list */
  return self.NETWORK_PROVIDER(institutionCode).then((response) => {
+      if (!this._isMounted) return;
  // let bankList = [];
  self.networkProviderFromMars.items.map((oo) => {
  self.networkProviderListSet.push({
@@ -13227,8 +13263,10 @@ import { useVuelidate } from '@vuelidate/core';
  });
  return true;
  }).then(() => {
+      if (!this._isMounted) return;
  /* API call to fetch bank list */
  return self.SERVICE_PROVIDER(institutionCode).then((response) => {
+      if (!this._isMounted) return;
  // let bankList = [];
  self.serviceProviderFromMars.items.map((oo) => {
  self.serviceProviderListSet.push({
@@ -13240,6 +13278,7 @@ import { useVuelidate } from '@vuelidate/core';
  });
  return true;
  }).then(() => {
+      if (!this._isMounted) return;
  if (
  this.propLeadDeatils.marsFormSubmitAction == 1 ||
  this.propLeadDeatils.marsFormSubmitAction == 2
@@ -13247,6 +13286,7 @@ import { useVuelidate } from '@vuelidate/core';
  return this.FETCH_SAVED_DATA_FROM_OWN_DB({
  leadId: this.$route.params.id,
  }).then(() => {
+      if (!this._isMounted) return;
 
 
             let additionalInfoParsed = {};
@@ -13285,54 +13325,64 @@ import { useVuelidate } from '@vuelidate/core';
  .applicationDate
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.salesInformation["aggreementDate"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.salesInformation
  .aggreementDate
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.salesInformation["loanDisbursementDate"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.salesInformation
  .loanDisbursementDate
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.salesInformation["tenureStartDate"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.salesInformation
  .tenureStartDate
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.companyInformation["establishYear"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.companyInformation
  .establishYear
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.bankInformation
  .collectionDetails["chequeDepositedDate"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.bankInformation
  .collectionDetails.chequeDepositedDate
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.bankInformation
  .collectionDetails["collectedDate"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.bankInformation
  .collectionDetails.collectedDate
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.bankInformation
  .collectionDetails["chequeDate"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.bankInformation
  .collectionDetails.chequeDate
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.businessInformation["memberSince"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.businessInformation
  .memberSince
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  return (this.marsSavedDataFromInternal.businessInformation["lastTurnoverYear"] = this.commonDateFormat(
  this.marsSavedDataFromInternal.businessInformation
  .lastTurnoverYear
  ));
  }).then(() => {
+      if (!this._isMounted) return;
  delete this.marsSavedDataFromInternal.salesInformation
  .salesPersonCode;
  if (!this.merchant) this.merchant = {};
@@ -13442,6 +13492,7 @@ import { useVuelidate } from '@vuelidate/core';
  return true;
  }
  }).then(() => {
+      if (!this._isMounted) return;
  this.merchant.paymentDetails.cashAtPosEnabled = this.propLeadDeatils
  .posEnable
  ? "Y"
@@ -13518,6 +13569,7 @@ import { useVuelidate } from '@vuelidate/core';
 
  this.LEAD_INFORMATION_VAS_MAPPING_DERTAILS(params)
  .then((response) => {
+      if (!self._isMounted) return;
  this.$q.loading.hide();
  this.$q.notify({
  color: "positive",
@@ -13545,6 +13597,7 @@ import { useVuelidate } from '@vuelidate/core';
  };
  this.GET_LEAD_INFORMATION_VAS_MAPPING_DERTAILS(params)
  .then((response) => {
+      if (!this._isMounted) return;
  this.$q.loading.hide();
  this.$q.notify({
  color: "positive",
@@ -13614,6 +13667,7 @@ import { useVuelidate } from '@vuelidate/core';
  this.merchant["partnerInformation"] = this.viewBinding.partnersArr;
  this.merchant["revParamAndLeadInfo"] = this.revParamAndLeadInfo;
  this.MARS_DATA_SUBMIT_INTERNAL({ merchant: this.merchant, action: 1 }).then((response) => {
+      if (!this._isMounted) return;
  this.$q.loading.hide();
  this.$q.notify({
  color: "positive",
@@ -13794,7 +13848,8 @@ import { useVuelidate } from '@vuelidate/core';
  ) {
  self
  .EQUITAS_FRM_DATA(equitasData)
- .then((response) => { })
+ .then((response) => {
+      if (!this._isMounted) return; })
  .catch(() => {
  self.$q.loading.hide();
  });
@@ -13802,6 +13857,7 @@ import { useVuelidate } from '@vuelidate/core';
  self
  .MARS_DATA_SUBMIT_INTERNAL(finalRequest)
  .then((response) => {
+      if (!this._isMounted) return;
  self.$q.loading.show({
  delay: 0, // ms
  spinnerColor: "purple-9",
@@ -13897,6 +13953,7 @@ import { useVuelidate } from '@vuelidate/core';
  leadStatus: this.propLeadDeatils.leadStatus,
  refNumber: this.propLeadDeatils.merchantRefCode,
  }).then((response) => {
+      if (!this._isMounted) return;
  let feed_paramaters;
  if (response.status == 204) {
  feed_paramaters = {
@@ -13920,6 +13977,7 @@ import { useVuelidate } from '@vuelidate/core';
  self
  .SUBMIT_SUB_TID_MERCHANT_REF_CODE_DETAILS(param)
  .then((response) => {
+      if (!this._isMounted) return;
  self.$q.notify({
  color: "positive",
  position: "bottom",
@@ -13938,6 +13996,7 @@ import { useVuelidate } from '@vuelidate/core';
  request: feed_paramaters,
  leadId: self.$route.params.id,
  }).then((response) => {
+      if (!this._isMounted) return;
  self.$q.notify({
  color: "positive",
  position: "bottom",
@@ -14046,6 +14105,7 @@ import { useVuelidate } from '@vuelidate/core';
  self
  .MARS_CHECK_STATUS_API(finalRequest)
  .then(response => {
+      if (!this._isMounted) return;
  let feed_paramaters = {
  applicationNumber: response.data.applicationNumber,
  merchantRefCode: response.data.merchantRefCode,
@@ -14060,6 +14120,7 @@ import { useVuelidate } from '@vuelidate/core';
  request: feed_paramaters,
  leadId: self.$route.params.id
  }).then(response => {
+      if (!this._isMounted) return;
  self.$q.notify({
  color: "positive",
  position: "bottom",
@@ -14176,6 +14237,7 @@ import { useVuelidate } from '@vuelidate/core';
  leadStatus: this.propLeadDeatils.leadStatus,
  refNumber: this.propLeadDeatils.merchantRefCode
  }).then(response => {
+      if (!this._isMounted) return;
  let feed_paramaters;
  if (response.status == 204) {
  feed_paramaters = {
@@ -14201,6 +14263,7 @@ import { useVuelidate } from '@vuelidate/core';
  self
  .SUBMIT_SUB_TID_MERCHANT_REF_CODE_DETAILS(param)
  .then(response => {
+      if (!this._isMounted) return;
  self.$q.notify({
  color: "positive",
  position: "bottom",
@@ -14219,6 +14282,7 @@ import { useVuelidate } from '@vuelidate/core';
  request: feed_paramaters,
  leadId: self.$route.params.id
  }).then(response => {
+      if (!this._isMounted) return;
  self.$q.notify({
  color: "positive",
  position: "bottom",
@@ -14431,8 +14495,9 @@ import { useVuelidate } from '@vuelidate/core';
  this.FETCH_ALL_MPOS_SUBCATEGORY(this.merchant.additionalInfo.category);
  },
  fnFetchZone() {
-        if (!this.merchant || !this.merchant.additionalInfo) return;
+	        if (!this.merchant || !this.merchant.additionalInfo || !this.merchant.additionalInfo.branchZone) return;
  // this.FETCH_ALL_DISTRICT(this.merchant.salesInformation.iaLocation).then(() => {
+      if (!this._isMounted) return;
 
  // let assumeArr = [];
  // this.getAllDistrict.district.map(function(value) {
@@ -14445,7 +14510,7 @@ import { useVuelidate } from '@vuelidate/core';
  this.FETCH_ALL_DISTRICT(this.merchant.additionalInfo.branchZone);
  },
  fnFetchBranchName() {
-        if (!this.merchant || !this.merchant.additionalInfo) return;
+	        if (!this.merchant || !this.merchant.additionalInfo || !this.merchant.additionalInfo.iaDistrict) return;
  this.FECTCH_ALL_BRANCH(this.merchant.additionalInfo.iaDistrict);
  this.merchant.additionalInfo.raDistrict =
  this.merchant.additionalInfo.iaDistrict;
@@ -14460,6 +14525,7 @@ import { useVuelidate } from '@vuelidate/core';
  },
  searchIaLocation(request, update, abort) {
  this.FETCH_IA_LOCATION(request).then(() => {
+      if (!this._isMounted) return;
  update(() => {
  this.iaLocationOptions = this.getiaLocation;
  });
@@ -14471,6 +14537,7 @@ import { useVuelidate } from '@vuelidate/core';
  return;
  }
  this.FETCH_IOR_STATE(request).then(() => {
+      if (!this._isMounted) return;
  update(() => {
  this.iorStateOptions = this.getiorState;
  });
@@ -14482,19 +14549,20 @@ import { useVuelidate } from '@vuelidate/core';
  return;
  }
  this.FETCH_AXIS_BANK_PINCODE_LOCATION(request).then(() => {
+      if (!this._isMounted) return;
  update(() => {
  this.axisBankPincodeOptions = this.getAxisBankPincode;
  });
  });
  },
  pincodeBasedDistrict() {
-        if (!this.merchant || !this.merchant.additionalInfo) return;
+	        if (!this.merchant || !this.merchant.additionalInfo || !this.merchant.additionalInfo.pin) return;
  this.FETCH_AXIS_BANK_PINCODE_BASED_DISTRICT(
  this.merchant.additionalInfo.pin
  );
  },
  pincodeandDistrictBasedCity() {
-        if (!this.merchant || !this.merchant.additionalInfo) return;
+	        if (!this.merchant || !this.merchant.additionalInfo || !this.merchant.additionalInfo.pin || !this.merchant.additionalInfo.state) return;
  this.FETCH_AXIS_BANK_PINCODE_DISTRICT(
  this.merchant.additionalInfo.pin +
  "/" +
@@ -14502,12 +14570,13 @@ import { useVuelidate } from '@vuelidate/core';
  );
  },
  citybasedlocation() {
-        if (!this.merchant || !this.merchant.additionalInfo) return;
+	        if (!this.merchant || !this.merchant.additionalInfo || !this.merchant.additionalInfo.city) return;
  this.FETCH_AXIS_BANK_CITY_LOCATION(this.merchant.additionalInfo.city);
  },
  applicationNumberFromToHands(leadid) {
  this.FETCH_APPLICATION_NUMBER(leadid)
  .then(() => {
+      if (!this._isMounted) return;
 
  console.log("TWO HANDS APP NUM", this.getApplicationNumber.applicationNumber)
 
