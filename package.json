@@ -1,5 +1,6 @@
 {
   "name": "quasar_sat",
+  "productName": "Bijlipay",
   "version": "1.0.0",
   "dependencies": {
     "@quasar/extras": "^1.17.0",
