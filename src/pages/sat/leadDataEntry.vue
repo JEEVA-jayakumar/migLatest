@@ -340,7 +340,7 @@
         </q-expansion-item>
 
         <q-expansion-item
-          opened
+          default-opened
           icon="file_copy"
           group="primary"
           label="Documents"

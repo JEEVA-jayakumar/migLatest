@@ -53,7 +53,7 @@
               <div class="col-md-12 q-body-1">
                 <q-expansion-item
                   separator
-                  opened
+                  default-opened
                   :group="toggleCollapsible"
                   @hide="functionToggleCollapsible"
                   :ref="'singleImageIndex'+index"
@@ -134,7 +134,7 @@
             <!-- START >> View type is 1, Category has sub category, hence defined in else part -->
             <div class="row items-center full-width" v-else>
               <div class="col-md-12 q-body-1">
-                <q-expansion-item separator opened :group="toggleCollapsible" class="full-width">
+                <q-expansion-item separator default-opened :group="toggleCollapsible" class="full-width">
                   <template v-slot:header>
                     <q-item-section side ><q-icon name="apps" /></q-item-section>
                     <q-item-section class="q-body-1"><q-item-label>{{ index }}</q-item-label><q-item-label caption>{{ (documents?.length || 0) + ' Type(s)' }}</q-item-label></q-item-section>
@@ -174,7 +174,7 @@
                     :key="subIndex"
                   >
                     <div class="col-md-12 q-body-1">
-                      <q-expansion-item separator opened multiline class="full-width">
+                      <q-expansion-item separator default-opened multiline class="full-width">
                         <template v-slot:header>
                           <q-item-section side  ><q-icon :color="subDocument.kycException?'amber-9':''" :name="subDocument.kycException? 'warning' :'attach_file'" /></q-item-section>
                           <q-item-section class="q-body-1"><q-item-label>{{ subDocument?.subDocumentType }}</q-item-label><q-item-label caption>{{ (subDocument?.uploadedDocuments?.length || 0) + ' Document(s)' }}</q-item-label></q-item-section>
