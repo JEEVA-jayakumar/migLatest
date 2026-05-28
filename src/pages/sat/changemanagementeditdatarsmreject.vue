@@ -206,7 +206,7 @@
 
             <div class="col-xs-12 col-sm-6">
               <q-input @update:model-value="val => { merchant.companyinformation.pan = val ? val.toUpperCase() : val; }"
-                  color="grey-9" @blur="v$.merchant?.companyinformation?.pan?.$touch" :error="v$.merchant?.companyinformation?.pan?.$error" v-model="merchant.companyinformation.pan" class="no-margin" label="Pan Number"/>
+                  color="grey-9" @blur="v$.merchant?.companyinformation?.pan?.$touch" :error="v$.merchant?.companyinformation?.pan?.$error" :model-value="merchant.companyinformation.pan" class="no-margin" label="Pan Number"/>
               <div
                   class="text-negative"
                   v-if="error.field.merchant.companyinformation.pan.alert">
@@ -257,7 +257,7 @@
                   @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val ? val.toUpperCase() : val; }"
                   color="grey-9"
                   @blur="populateBankDetails"
-                  v-model="merchant.bankInformation.bankDetails.ifsc"
+                  :model-value="merchant.bankInformation.bankDetails.ifsc"
                   label="IFSC Code*"
                   placeholder="Enter IFSC*"
                 />

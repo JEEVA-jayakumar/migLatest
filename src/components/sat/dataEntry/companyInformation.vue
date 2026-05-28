@@ -121,7 +121,7 @@
           @blur="v$.merchant.companyInformation.pan.$touch()"
           :error="v$.merchant.companyInformation.pan.$error"
           color="grey-9"
-          v-model="merchant.companyInformation.pan"
+          :model-value="merchant.companyInformation.pan"
           label="Company PAN*"
           placeholder="Company PAN*"
         />
@@ -132,7 +132,7 @@
           @blur="v$.merchant.companyInformation.tan.$touch()"
           :error="v$.merchant.companyInformation.tan.$error"
           color="grey-9"
-          v-model="merchant.companyInformation.tan"
+          :model-value="merchant.companyInformation.tan"
           label="TAN"
           placeholder="TAN"
         />

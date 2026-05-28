@@ -552,7 +552,7 @@
             <q-input
               color="grey-9"
               @blur="populateBankDetails"
-              v-model="merchant.bankInformation.bankDetails.ifsc"
+              :model-value="merchant.bankInformation.bankDetails.ifsc"
               label="IFSC Code*"
               placeholder="Enter IFSC*"
             />

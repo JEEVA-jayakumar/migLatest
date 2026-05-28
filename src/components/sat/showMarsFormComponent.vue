@@ -1054,9 +1054,9 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.companyInformation.pan = val.toUpperCase(); }" @blur="v$.merchant.companyInformation?.pan?.$touch"
+ <q-input @update:model-value="val => { merchant.companyInformation.pan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.pan?.$touch"
  :error="v$.merchant.companyInformation?.pan?.$error" color="grey-9"
- v-model.trim="merchant.companyInformation.pan" label="Company PAN*"
+ :model-value="merchant.companyInformation.pan" label="Company PAN*"
  placeholder="Company PAN*" />
  <div class="text-negative" v-if="error.field.merchant?.companyInformation?.pan?.alert">
  <MarsErrorResponse :error="error.field.merchant?.companyInformation?.pan" />
@@ -1080,9 +1080,9 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.companyInformation.tan = val.toUpperCase(); }" @blur="v$.merchant.companyInformation?.tan?.$touch"
+ <q-input @update:model-value="val => { merchant.companyInformation.tan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.tan?.$touch"
  :error="v$.merchant.companyInformation?.tan?.$error" color="grey-9"
- v-model.trim="merchant.companyInformation.tan" label="TAN" placeholder="TAN" />
+ :model-value="merchant.companyInformation.tan" label="TAN" placeholder="TAN" />
  <div class="text-negative" v-if="error.field.merchant?.companyInformation?.tan?.alert">
  <MarsErrorResponse :error="error.field.merchant?.companyInformation?.tan" />
  </div>
@@ -1543,8 +1543,8 @@
  </q-input>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { viewBinding.partnersArr[index].pan = val.toUpperCase(); }" :error="partnerFieldHasError(index, 'pan')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9"
- v-model.trim="viewBinding.partnersArr[index].pan" label="Pan*" placeholder="Pan*" />
+ <q-input @update:model-value="val => { viewBinding.partnersArr[index].pan = val ? val.toUpperCase() : val; }" :error="partnerFieldHasError(index, 'pan')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9"
+ :model-value="viewBinding.partnersArr[index].pan" label="Pan*" placeholder="Pan*" />
  <div class="textf-negative" v-if="
  error.field.merchant?.partnerInformation[index]?.pan?.alert
  ">
@@ -1938,7 +1938,7 @@
  <div class="col-md-6 col-sm-12 col-xs-12">
  <q-input color="grey-9" @blur="v$.merchant.businessInformation?.gstId?.$touch"
  :error="v$.merchant?.businessInformation?.gstId?.$error"
- v-model.trim="merchant.businessInformation.gstId" @update:model-value="val => marsRequiredFormattingofGST(val ? val.toUpperCase() : val)"
+ :model-value="merchant.businessInformation.gstId" @update:model-value="val => marsRequiredFormattingofGST(val ? val.toUpperCase() : val)"
  label="GST ID" placeholder="GST ID" />
  <div class="text-negative" v-if="error.field.merchant?.businessInformation?.gstId?.alert">
  <MarsErrorResponse :error="error.field.merchant?.businessInformation?.gstId" />
@@ -5090,8 +5090,8 @@
  <div class="q-title">Merchant Bank Details</div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val.toUpperCase(); }" color="grey-9" :error="v$.merchant?.bankInformation?.bankDetails?.ifsc?.$error"
- @blur="populateBankDetails" v-model.trim="merchant.bankInformation.bankDetails.ifsc"
+ <q-input @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val ? val.toUpperCase() : val; }" color="grey-9" :error="v$.merchant?.bankInformation?.bankDetails?.ifsc?.$error"
+ @blur="populateBankDetails" :model-value="merchant.bankInformation.bankDetails.ifsc"
  label="IFSC Code*" placeholder="Enter IFSC*" />
  <div class="text-negative" v-if="
  error.field.merchant?.bankInformation?.bankDetails?.ifsc?.alert

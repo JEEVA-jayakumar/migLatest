@@ -26,11 +26,10 @@
                   color="grey-9"
                   :disable="formData.marsDeviceIdsCookedUnAssinged.length == 0"
                   :options="filteredAssignToOptions"
-                  placeholder="Assign To"
+                  label="Assign To"
                   emit-value
                   map-options
                 />
-            <div v-if="!formData.assignTo" class="q-px-sm q-pt-xs text-grey-7">Assign To</div>
               </div>
               <div class="col-md-4 col-sm-6 col-xs-6">
                 <q-checkbox v-model="formData.triggerWelcomeMail" color="dark" label="Trigger welcome email" />

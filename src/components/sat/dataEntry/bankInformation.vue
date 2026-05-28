@@ -10,7 +10,7 @@
           color="grey-9"
           :error="v$.merchant.bankInformation.bankDetails.ifsc.$error"
           @blur="populateBankDetails"
-          v-model="merchant.bankInformation.bankDetails.ifsc"
+          :model-value="merchant.bankInformation.bankDetails.ifsc"
           label="IFSC Code*"
           placeholder="Enter IFSC*"
         />
