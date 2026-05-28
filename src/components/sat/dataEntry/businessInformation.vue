@@ -90,7 +90,7 @@
           color="grey-9"
           @blur="v$.merchant.businessInformation.gstId.$touch()"
           :error="v$.merchant.businessInformation.gstId.$error"
-          :model-value="merchant.businessInformation.gstId"
+          v-model="merchant.businessInformation.gstId"
           label="GST ID"
           placeholder="GST ID"
         />

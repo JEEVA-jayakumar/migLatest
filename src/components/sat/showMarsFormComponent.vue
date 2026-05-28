@@ -1054,9 +1054,8 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.companyInformation.pan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.pan?.$touch"
- :error="v$.merchant.companyInformation?.pan?.$error" color="grey-9"
- :model-value="merchant.companyInformation.pan" label="Company PAN*"
+ <q-input :model-value="merchant.companyInformation.pan" @update:model-value="val => { merchant.companyInformation.pan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.pan?.$touch"
+ :error="v$.merchant.companyInformation?.pan?.$error" color="grey-9" label="Company PAN*"
  placeholder="Company PAN*" />
  <div class="text-negative" v-if="error.field.merchant?.companyInformation?.pan?.alert">
  <MarsErrorResponse :error="error.field.merchant?.companyInformation?.pan" />
@@ -1080,9 +1079,8 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.companyInformation.tan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.tan?.$touch"
- :error="v$.merchant.companyInformation?.tan?.$error" color="grey-9"
- :model-value="merchant.companyInformation.tan" label="TAN" placeholder="TAN" />
+ <q-input :model-value="merchant.companyInformation.tan" @update:model-value="val => { merchant.companyInformation.tan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.tan?.$touch"
+ :error="v$.merchant.companyInformation?.tan?.$error" color="grey-9" label="TAN" placeholder="TAN" />
  <div class="text-negative" v-if="error.field.merchant?.companyInformation?.tan?.alert">
  <MarsErrorResponse :error="error.field.merchant?.companyInformation?.tan" />
  </div>
@@ -1543,8 +1541,7 @@
  </q-input>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { viewBinding.partnersArr[index].pan = val ? val.toUpperCase() : val; }" :error="partnerFieldHasError(index, 'pan')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9"
- :model-value="viewBinding.partnersArr[index].pan" label="Pan*" placeholder="Pan*" />
+ <q-input :model-value="viewBinding.partnersArr[index].pan" @update:model-value="val => { viewBinding.partnersArr[index].pan = val ? val.toUpperCase() : val; }" :error="partnerFieldHasError(index, 'pan')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9" label="Pan*" placeholder="Pan*" />
  <div class="textf-negative" v-if="
  error.field.merchant?.partnerInformation[index]?.pan?.alert
  ">
@@ -1936,9 +1933,8 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input color="grey-9" @blur="v$.merchant.businessInformation?.gstId?.$touch"
+ <q-input :model-value="merchant.businessInformation.gstId" @update:model-value="val => marsRequiredFormattingofGST(val ? val.toUpperCase() : val)" color="grey-9" @blur="v$.merchant.businessInformation?.gstId?.$touch"
  :error="v$.merchant?.businessInformation?.gstId?.$error"
- :model-value="merchant.businessInformation.gstId" @update:model-value="val => marsRequiredFormattingofGST(val ? val.toUpperCase() : val)"
  label="GST ID" placeholder="GST ID" />
  <div class="text-negative" v-if="error.field.merchant?.businessInformation?.gstId?.alert">
  <MarsErrorResponse :error="error.field.merchant?.businessInformation?.gstId" />
@@ -5090,8 +5086,8 @@
  <div class="q-title">Merchant Bank Details</div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val ? val.toUpperCase() : val; }" color="grey-9" :error="v$.merchant?.bankInformation?.bankDetails?.ifsc?.$error"
- @blur="populateBankDetails" :model-value="merchant.bankInformation.bankDetails.ifsc"
+ <q-input :model-value="merchant.bankInformation.bankDetails.ifsc" @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val ? val.toUpperCase() : val; }" color="grey-9" :error="v$.merchant?.bankInformation?.bankDetails?.ifsc?.$error"
+ @blur="populateBankDetails"
  label="IFSC Code*" placeholder="Enter IFSC*" />
  <div class="text-negative" v-if="
  error.field.merchant?.bankInformation?.bankDetails?.ifsc?.alert

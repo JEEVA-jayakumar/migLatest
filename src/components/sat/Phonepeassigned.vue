@@ -27,10 +27,10 @@
                   use-input
                   clearable
                   v-model="formData.assignTo"
+              placeholder="Assign To"
                   color="grey-9"
                   :disable="formData.marsDeviceIdsCookedUnAssinged.length == 0"
                   :options="assignToOptions"
-                  label="Assign To"
                   emit-value
                   map-options
                 />

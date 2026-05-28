@@ -549,10 +549,9 @@
             </div>
           </div>
           <div class="col-xs-12 col-sm-6">
-            <q-input
+            <q-input :model-value="merchant.bankInformation.bankDetails.ifsc" @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val ? val.toUpperCase() : val; }"
               color="grey-9"
               @blur="populateBankDetails"
-              :model-value="merchant.bankInformation.bankDetails.ifsc"
               label="IFSC Code*"
               placeholder="Enter IFSC*"
             />
@@ -1857,7 +1856,7 @@ export default {
           cashAtPosEnabled: "",
           intlCardAcceptance: "",
           preAuth: "",
-          rentalPlanCode: 1,
+          rentalPlanCode: "",
           remarks: "Payment Details Updated",
         },
         mdrPlan: {

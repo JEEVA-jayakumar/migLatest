@@ -23,10 +23,10 @@
                   @filter="filterAssignToOptions"
                   clearable
                   v-model="formData.assignTo"
+              placeholder="Assign To"
                   color="grey-9"
                   :disable="formData.marsDeviceIdsCookedUnAssinged.length == 0"
                   :options="filteredAssignToOptions"
-                  label="Assign To"
                   emit-value
                   map-options
                 />
