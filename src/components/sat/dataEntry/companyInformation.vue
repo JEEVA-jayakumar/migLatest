@@ -117,7 +117,7 @@
       </div>
       <div class="col-md-6 col-sm-12 col-xs-12">
         <q-input
-          upper-case
+          @update:model-value="val => { merchant.companyInformation.pan = val ? val.toUpperCase() : val; }"
           @blur="v$.merchant.companyInformation.pan.$touch()"
           :error="v$.merchant.companyInformation.pan.$error"
           color="grey-9"
@@ -128,7 +128,7 @@
       </div>
       <div class="col-md-6 col-sm-12 col-xs-12">
         <q-input
-          upper-case
+          @update:model-value="val => { merchant.companyInformation.tan = val ? val.toUpperCase() : val; }"
           @blur="v$.merchant.companyInformation.tan.$touch()"
           :error="v$.merchant.companyInformation.tan.$error"
           color="grey-9"

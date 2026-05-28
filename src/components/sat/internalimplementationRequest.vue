@@ -36,6 +36,7 @@
               emit-value
               map-options
             />
+            <div v-if="!formData.assignTo" class="q-px-sm q-pt-xs text-grey-7">Assign To</div>
             <q-checkbox
               v-model="formData.courier"
               color="dark"

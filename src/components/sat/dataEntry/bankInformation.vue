@@ -6,7 +6,7 @@
       </div>
       <div class="col-md-6 col-sm-12 col-xs-12">
         <q-input
-          upper-case
+          @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val.toUpperCase(); }"
           color="grey-9"
           :error="v$.merchant.bankInformation.bankDetails.ifsc.$error"
           @blur="populateBankDetails"
