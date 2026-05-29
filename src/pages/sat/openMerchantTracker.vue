@@ -66,10 +66,15 @@
                 </template>
               </q-input>
             </div>
+            <div class="col-md-7">
+              <downloadExcel :data="excelTableData" :fields="excelColumnData_field" name="Merchant Transaction Level.xls">
+                <q-btn outline color="grey-9" label="Download as Excel" class="q-mr-lg q-py-sm float-right" size="md" />
+              </downloadExcel>
+            </div>
           </template>
         </q-table>
       </q-pull-to-refresh>
-      <div v-if="toggleAjaxLoadFilter" class="fullscreen spinner-overlay">
+      <div v-if="getToggleCommonLoader" class="fullscreen spinner-overlay">
         <q-spinner-bars class="absolute-center" style="color:#61116a" :size="35"/>
       </div>
     </div>
@@ -88,7 +93,6 @@ export default {
   data: () => ({
     propToggleLeadInformation: false,
     addtnLeadInformation: null,
-    toggleAjaxLoadFilter: false,
     paginationControl: {
       rowsPerPage: 10,
       page: 1,
@@ -105,6 +109,15 @@ export default {
       { name: "createdBy", required: true, label: "SO Name", align: "left", field: "createdBy", sortable: false },
       { name: "verifiedStatus", required: true, label: "Status", align: "left", field: "verifiedStatus", sortable: false }
     ],
+    excelColumnData_field: {
+      "Created Date": "createdAt",
+      "Submitted Date": "submitteSATDate",
+      "Lead ID": "id",
+      "State": "state",
+      "SO Name": "soName",
+      "Status": "verifiedStatus"
+    },
+    excelTableData: [],
     tableData: [],
   }),
   created() {
@@ -112,19 +125,32 @@ export default {
   },
   computed: {
     ...mapGetters("OpenMerchantTracker", ["getAggOpenMerchantTracker"]),
+    ...mapGetters("commonLoader", ["getToggleCommonLoader"]),
   },
   methods: {
     ...mapActions("OpenMerchantTracker", ["FETCH_ALL_AGG_OPEN_MERCHANT_TRACKER_DATA"]),
+    ...mapActions("commonLoader", ["TOGGLE_COMMON_LOADER"]),
     ajaLoadDataAllopenAggMerchantTrackerData() {
-      this.toggleAjaxLoadFilter = true;
+      this.TOGGLE_COMMON_LOADER(true);
       this.FETCH_ALL_AGG_OPEN_MERCHANT_TRACKER_DATA()
         .then(() => {
           this.tableData = this.getAggOpenMerchantTracker;
-          this.toggleAjaxLoadFilter = false;
+          this.prepareExcelData();
+          this.TOGGLE_COMMON_LOADER(false);
         })
         .catch(() => {
-          this.toggleAjaxLoadFilter = false;
+          this.TOGGLE_COMMON_LOADER(false);
         });
+    },
+    prepareExcelData() {
+      this.excelTableData = this.getAggOpenMerchantTracker.map(value => ({
+        createdAt: value.createdAt,
+        submitteSATDate: value.submitteSATDate,
+        id: value.id,
+        state: value.state,
+        soName: value.createdBy ? value.createdBy.name : "NA",
+        verifiedStatus: value.verifiedStatus
+      }));
     },
     toggleLeadInformation(leadDetails) {
       this.propToggleLeadInformation = !this.propToggleLeadInformation;
@@ -136,6 +162,7 @@ export default {
       this.FETCH_ALL_AGG_OPEN_MERCHANT_TRACKER_DATA()
         .then(() => {
           this.tableData = this.getAggOpenMerchantTracker;
+          this.prepareExcelData();
           if (done) done();
         })
         .catch(() => {
