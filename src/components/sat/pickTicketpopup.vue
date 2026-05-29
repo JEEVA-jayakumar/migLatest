@@ -45,7 +45,7 @@
                   color="grey-9"
                   v-model="formData.so"
                   :options="assignToOptions"
-                  label="Select FSE Name*"
+                  :label="formData.so ? '' : 'Select FSE Name*'"
                 />
               </div>
             </div>

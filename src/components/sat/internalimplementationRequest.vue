@@ -27,12 +27,13 @@
           <div class="col-md-3 col-sm-6 col-xs-6">
             <q-select
               use-input
+
               clearable
               v-model="formData.assignTo"
-              placeholder="Assign To"
               color="grey-9"
               :disable="formData.marsDeviceIdsCooked.length == 0"
               :options="assignToOptions"
+              :label="formData.assignTo ? '' : 'Assign To'"
               emit-value
               map-options
             />
