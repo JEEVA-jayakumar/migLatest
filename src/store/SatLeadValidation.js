@@ -166,21 +166,26 @@ const SatLeadValidation = {
       commit
     }, request) {
       return api.get("lead-information-details/" + request).then(response => {
-        // START=> Making documents array'
-        var groupDocuments = _.groupBy(
-          response.data.data.leadDocuments,
-          function (document) {
-            return document.documentType;
-          }
-        );
+        if (response.data && response.data.data) {
+          // START=> Making documents array'
+          var groupDocuments = _.groupBy(
+            response.data.data.leadDocuments,
+            function (document) {
+              return document.documentType;
+            }
+          );
 
-        response.data.data["leadDocuments"] = groupDocuments;
-   
-        // END=> making documents array'
+          response.data.data["leadDocuments"] = groupDocuments;
 
-        // START=> COMMIT with data received'
-        commit("SET_SHORT_LEAD_DATA", response.data.data);
-        // END=> COMMIT with data received'
+          // END=> making documents array'
+
+          // START=> COMMIT with data received'
+          commit("SET_SHORT_LEAD_DATA", response.data.data);
+          // END=> COMMIT with data received'
+        }
+      }).catch(error => {
+        console.error("FETCH_SHORT_LEAD_DATA Error:", error);
+        return Promise.reject(error);
       });
     },
     /*END >> Module>> short lead data*/
@@ -213,7 +218,12 @@ const SatLeadValidation = {
           request.leadId
         )
         .then(response => {
-          commit('API_RESPONSE_LOG', true)
+          commit('API_RESPONSE_LOG', {
+            apiStatusCode: response.status,
+            apiPending: false,
+            apiSuccess: true,
+            apiData: response.data.data
+          })
           commit('SET_FETCH_CALL_BACK_RES', response.data)
         })
     },
@@ -223,7 +233,12 @@ const SatLeadValidation = {
       commit
     }, request) {
       return api.get("merchant-document-list").then(response => {
-        commit("API_RESPONSE_LOG", true);
+        commit("API_RESPONSE_LOG", {
+          apiStatusCode: response.status,
+          apiPending: false,
+          apiSuccess: true,
+          apiData: response.data.data
+        });
 
         // START=> COMMIT with data received'
         commit("SET_SHORT_LEAD_DOCUMENT_TYPE_DATA", response.data.data);
@@ -236,7 +251,12 @@ const SatLeadValidation = {
       commit
     }, request) {
       return api.get("merchant-document-list/1").then(response => {
-        commit("API_RESPONSE_LOG", true);
+        commit("API_RESPONSE_LOG", {
+          apiStatusCode: response.status,
+          apiPending: false,
+          apiSuccess: true,
+          apiData: response.data.data
+        });
 
         // START=> COMMIT with data received'
         commit("SET_SHORT_LEAD_DOCUMENT_TYPE_DATA_QR", response.data.data);
@@ -259,7 +279,12 @@ const SatLeadValidation = {
           request.leadDetails
         )
         .then(response => {
-          commit("API_RESPONSE_LOG", true);
+          commit("API_RESPONSE_LOG", {
+            apiStatusCode: response.status,
+            apiPending: false,
+            apiSuccess: true,
+            apiData: response.data.data
+          });
           // START=> COMMIT with data received'
           commit("SET_VERIFY_DOCUMENT_FULL_LEAD", response.data.data);
           // END=> COMMIT with data received'
@@ -277,7 +302,12 @@ const SatLeadValidation = {
           request.leadDetails
         )
         .then(response => {
-          commit('API_RESPONSE_LOG', true)
+          commit('API_RESPONSE_LOG', {
+            apiStatusCode: response.status,
+            apiPending: false,
+            apiSuccess: true,
+            apiData: response.data.data
+          })
           // START=> COMMIT with data received'
           commit('SET_APPROVE_QR_DOCUMENT', response.data.data)
           // END=> COMMIT with data received'

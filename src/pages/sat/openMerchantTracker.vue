@@ -134,16 +134,19 @@ export default {
       this.TOGGLE_COMMON_LOADER(true);
       this.FETCH_ALL_AGG_OPEN_MERCHANT_TRACKER_DATA()
         .then(() => {
-          this.tableData = this.getAggOpenMerchantTracker;
+          this.tableData = this.getAggOpenMerchantTracker || [];
           this.prepareExcelData();
-          this.TOGGLE_COMMON_LOADER(false);
         })
-        .catch(() => {
+        .catch(error => {
+          console.error("OpenMerchantTracker Load Error:", error);
+        })
+        .finally(() => {
           this.TOGGLE_COMMON_LOADER(false);
         });
     },
     prepareExcelData() {
-      this.excelTableData = this.getAggOpenMerchantTracker.map(value => ({
+      const data = this.getAggOpenMerchantTracker || [];
+      this.excelTableData = data.map(value => ({
         createdAt: value.createdAt,
         submitteSATDate: value.submitteSATDate,
         id: value.id,
