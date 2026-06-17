@@ -189,3 +189,8 @@ body {
   background: #94a3b8;
   background-clip: content-box;
 }
+
+.spinner-overlay {
+  background: rgba(248, 247, 247, 0.3);
+  z-index: 9999;
+}

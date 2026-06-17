@@ -281,10 +281,12 @@ export default {
         this.leadInformation.leadId || this.leadInformation.id
       )
         .then(response => {
-          this.propLeadInformation = this.getShortLeadInfo;
-          this.$q.loading.hide();
+          this.propLeadInformation = this.getShortLeadInfo || {};
         })
-        .catch(() => {
+        .catch(error => {
+          console.error("Lead Info Popup Error:", error);
+        })
+        .finally(() => {
           this.$q.loading.hide();
         });
     },

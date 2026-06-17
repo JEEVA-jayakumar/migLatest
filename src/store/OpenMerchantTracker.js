@@ -101,10 +101,11 @@ const OpenMerchantTracker = {
             apiStatusCode: error.status,
             apiPending: false,
             apiFailure: true,
-            apiData: response.data.data
+            apiData: []
           };
           commit("API_RESPONSE_LOG", data);
           console.log("API_RESPONSE_LOG", error);
+          return Promise.reject(error);
         });
     },
     /*END >> Module>> all operations head exception lists*/
@@ -134,10 +135,11 @@ const OpenMerchantTracker = {
             apiStatusCode: error.status,
             apiPending: false,
             apiFailure: true,
-            apiData: response.data.data
+            apiData: []
           };
           commit("API_RESPONSE_LOG", data);
           console.log("API_RESPONSE_LOG", error);
+          return Promise.reject(error);
         });
     },
   },

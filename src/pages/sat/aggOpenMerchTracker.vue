@@ -21,7 +21,7 @@
           :columns="columns"
           :filter="filter"
           v-model:pagination="paginationControl"
-          row-key="name"
+          row-key="id"
         >
           <!--START: table body modification -->
           <template v-slot:body-cell-createdAt="props">
@@ -65,7 +65,7 @@
             <q-td v-if="props.row" :props="props">{{props.row.verifiedStatus}}</q-td>
           </template>
 
-          <template v-slot:top="props">
+          <template v-slot:top>
             <div class="col-5">
               <q-input dense clearable
                 v-model="filter"
@@ -78,12 +78,17 @@
                 </template>
               </q-input>
             </div>
+            <div class="col-md-7">
+              <downloadExcel :data="excelTableData" :fields="excelColumnData_field" name="Merchant Transaction Level.xls">
+                <q-btn outline color="grey-9" label="Download as Excel" class="q-mr-lg q-py-sm float-right" size="md" />
+              </downloadExcel>
+            </div>
           </template>
         </q-table>
         <!--END: table open merchant tracker -->
       </q-pull-to-refresh>
       <!--START >>  Show Ajax Spinner -->
-      <div v-if="toggleAjaxLoadFilter" class="fullscreen spinner-overlay">
+      <div v-if="getToggleCommonLoader" class="fullscreen spinner-overlay">
         <q-spinner-bars class="absolute-center" style="color:#61116a" :size="35"/>
       </div>
       <!--END >>  Show Ajax Spinner -->
@@ -103,7 +108,6 @@ export default {
   data: () => ({
     propToggleLeadInformation: false,
     addtnLeadInformation: null,
-    toggleAjaxLoadFilter: false,
     paginationControl: {
       rowsPerPage: 10
     },
@@ -174,7 +178,15 @@ export default {
         sortable: false
       }
     ],
-    loading: true,
+    excelColumnData_field: {
+      "Created Date": "createdAt",
+      "Submitted Date": "submitteSATDate",
+      "Lead ID": "id",
+      "State": "state",
+      "SO Name": "soName",
+      "Status": "verifiedStatus"
+    },
+    excelTableData: [],
     tableData: [],
   }),
 
@@ -196,12 +208,27 @@ export default {
       this.TOGGLE_COMMON_LOADER(true);
       this.FETCH_ALL_OPEN_MERCHANT_TRACKER_DATA()
         .then(response => {
-          this.tableData = this.getOpenMerchantTracker;
-          this.TOGGLE_COMMON_LOADER(false);
+          this.tableData = this.getOpenMerchantTracker || [];
+          this.prepareExcelData();
         })
-        .catch(() => {
+        .catch(error => {
+          console.error("AggOpenMerchantTracker Load Error:", error);
+        })
+        .finally(() => {
           this.TOGGLE_COMMON_LOADER(false);
         });
+    },
+
+    prepareExcelData() {
+      const data = this.getOpenMerchantTracker || [];
+      this.excelTableData = data.map(value => ({
+        createdAt: value.createdAt,
+        submitteSATDate: value.submitteSATDate,
+        id: value.id,
+        state: value.state,
+        soName: value.createdBy ? value.createdBy.name : (value.assignedTo ? value.assignedTo.name : "NA"),
+        verifiedStatus: value.verifiedStatus
+      }));
     },
 
     toggleLeadInformation(leadDetails) {
@@ -215,10 +242,11 @@ export default {
       this.FETCH_ALL_OPEN_MERCHANT_TRACKER_DATA()
         .then(response => {
           this.tableData = this.getOpenMerchantTracker;
-          done();
+          this.prepareExcelData();
+          if (done) done();
         })
         .catch(() => {
-          done();
+          if (done) done();
         });
     }
   }
