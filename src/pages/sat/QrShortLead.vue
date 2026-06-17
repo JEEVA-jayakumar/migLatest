@@ -2154,8 +2154,8 @@ export default {
           ],
           paymentDetails: {
             deviceOwnedBy: "S", installationFee: 0, terminalModeCode: "", terminalType: "POS", cardAcceptance: "1", numberOfTerminals: 1, emiStartDate: null,
-            omcEnabled: false, intlCardAcceptance: "N", creditCardBlock: "N", tipPercentage: "20", rentalPlanCode: "", recurringFees: "", serviceProvider: "1",
-            networkPreferred: "1", rentalMode: "", rentalType: "", advanceRentCollected: 0, advanceRentMode: "NEFT", noOfMonthRentPaidInAdvance: "0",
+            omcEnabled: false, intlCardAcceptance: "N", creditCardBlock: "N", tipPercentage: "20", rentalPlanCode: "", recurringFees: "", serviceProvider: "",
+            networkPreferred: "", rentalMode: "", rentalType: "", advanceRentCollected: 0, advanceRentMode: "NEFT", noOfMonthRentPaidInAdvance: "0",
             gracePeriod: 0, totalEmiAmount: "", emiTenure: "", otherCharges: "", totalAmountPaid: "", cashAtPosEnabled: "N", vpa: []
           },
           bankInformation: {

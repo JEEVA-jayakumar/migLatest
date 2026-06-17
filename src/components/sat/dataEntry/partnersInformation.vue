@@ -31,7 +31,7 @@
       </div>
       <div class="col-md-6 col-sm-12 col-xs-12">
         <q-input
-          upper-case
+          @update:model-value="val => { partner.pan = val.toUpperCase(); }"
           :error="partnerFieldHasError(index, 'pan')"
           @blur="v$.partnersArr.$touch()"
           color="grey-9"

@@ -178,10 +178,21 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date" @blur="v$.merchant?.salesInformation?.applicationDate?.$touch"
+ <q-input @blur="v$.merchant?.salesInformation?.applicationDate?.$touch"
  :error="v$.merchant.salesInformation?.applicationDate?.$error" color="grey-9"
  v-model.trim="merchant.salesInformation.applicationDate"
- label="Application Date*" placeholder="Application Date*" />
+ label="Application Date*" placeholder="Application Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.applicationDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.applicationDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.salesInformation?.applicationDate?.alert
  ">
@@ -199,11 +210,21 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date"
- @blur="v$.merchant?.salesInformation?.aggreementDate?.$touch"
+ <q-input @blur="v$.merchant?.salesInformation?.aggreementDate?.$touch"
  :error="v$.merchant.salesInformation?.aggreementDate?.$error" color="grey-9"
  v-model.trim="merchant.salesInformation.aggreementDate" label="Agreement Date*"
- placeholder="Agreement Date*" />
+ placeholder="Agreement Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.aggreementDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.aggreementDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.salesInformation?.aggreementDate?.alert
  ">
@@ -475,12 +496,23 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date" @blur="
+ <q-input @blur="
  v$.merchant?.salesInformation?.loanDisbursementDate?.$touch
  " :error="
  v$.merchant?.salesInformation?.loanDisbursementDate?.$error
  " color="grey-9" v-model.trim="merchant.salesInformation.loanDisbursementDate"
- label="Disbursement Date*" placeholder="Disbursement Date*" />
+ label="Disbursement Date*" placeholder="Disbursement Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.loanDisbursementDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.loanDisbursementDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.salesInformation?.loanDisbursementDate
  .alert
@@ -533,11 +565,21 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date"
- @blur="v$.merchant?.salesInformation?.tenureStartDate?.$touch"
+ <q-input @blur="v$.merchant?.salesInformation?.tenureStartDate?.$touch"
  :error="v$.merchant.salesInformation?.tenureStartDate?.$error" color="grey-9"
  v-model.trim="merchant.salesInformation.tenureStartDate" label="Start Date*"
- placeholder="Tenure Start Date*" />
+ placeholder="Tenure Start Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.tenureStartDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.tenureStartDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.salesInformation?.tenureStartDate?.alert
  ">
@@ -939,11 +981,22 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date" color="grey-9"
+ <q-input color="grey-9"
  @blur="v$.merchant?.companyInformation?.establishYear?.$touch"
  :error="v$.merchant?.companyInformation?.establishYear?.$error"
  v-model.trim="merchant.companyInformation.establishYear" label="Year of Establishment*"
- placeholder="Year of Establishment*" />
+ placeholder="Year of Establishment*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.companyInformation.establishYear" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.companyInformation.establishYear" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.companyInformation?.establishYear?.alert
  ">
@@ -1021,9 +1074,8 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.companyInformation.pan = val.toUpperCase(); }" @blur="v$.merchant.companyInformation?.pan?.$touch"
- :error="v$.merchant.companyInformation?.pan?.$error" color="grey-9"
- v-model.trim="merchant.companyInformation.pan" label="Company PAN*"
+ <q-input :model-value="merchant.companyInformation.pan" @update:model-value="val => { merchant.companyInformation.pan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.pan?.$touch"
+ :error="v$.merchant.companyInformation?.pan?.$error" color="grey-9" label="Company PAN*"
  placeholder="Company PAN*" />
  <div class="text-negative" v-if="error.field.merchant?.companyInformation?.pan?.alert">
  <MarsErrorResponse :error="error.field.merchant?.companyInformation?.pan" />
@@ -1047,9 +1099,8 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.companyInformation.tan = val.toUpperCase(); }" @blur="v$.merchant.companyInformation?.tan?.$touch"
- :error="v$.merchant.companyInformation?.tan?.$error" color="grey-9"
- v-model.trim="merchant.companyInformation.tan" label="TAN" placeholder="TAN" />
+ <q-input :model-value="merchant.companyInformation.tan" @update:model-value="val => { merchant.companyInformation.tan = val ? val.toUpperCase() : val; }" @blur="v$.merchant.companyInformation?.tan?.$touch"
+ :error="v$.merchant.companyInformation?.tan?.$error" color="grey-9" label="TAN" placeholder="TAN" />
  <div class="text-negative" v-if="error.field.merchant?.companyInformation?.tan?.alert">
  <MarsErrorResponse :error="error.field.merchant?.companyInformation?.tan" />
  </div>
@@ -1486,19 +1537,39 @@
  </div>
  </div>
  <!-- <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date" @blur="v$.merchant?.salesInformation?.applicationDate?.$touch"
+ <q-input @blur="v$.merchant?.salesInformation?.applicationDate?.$touch"
  :error="v$.merchant.salesInformation?.applicationDate?.$error" color="grey-9"
    v-model.trim="merchant.salesInformation.applicationDate"
- label="Application Date*" placeholder="Application Date*" />
+ label="Application Date*" placeholder="Application Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.applicationDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.salesInformation.applicationDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  </div> -->
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date" :min="past" :max="future"
- :error="partnerFieldHasError(index, 'dob')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9" v-model.trim="viewBinding.partnersArr[index].dob"
- label="PAN DOB *" placeholder="PAN DOB *" />
+ <q-input :error="partnerFieldHasError(index, 'dob')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9" v-model.trim="viewBinding.partnersArr[index].dob"
+ label="PAN DOB *" placeholder="PAN DOB *" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="viewBinding.partnersArr[index].dob" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="viewBinding.partnersArr[index].dob" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { viewBinding.partnersArr[index].pan = val.toUpperCase(); }" :error="partnerFieldHasError(index, 'pan')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9"
- v-model.trim="viewBinding.partnersArr[index].pan" label="Pan*" placeholder="Pan*" />
+ <q-input :model-value="viewBinding.partnersArr[index].pan" @update:model-value="val => { viewBinding.partnersArr[index].pan = val ? val.toUpperCase() : val; }" :error="partnerFieldHasError(index, 'pan')" @blur="v$.viewBinding.partnersArr.$touch()" color="grey-9" label="Pan*" placeholder="Pan*" />
  <div class="textf-negative" v-if="
  error.field.merchant?.partnerInformation[index]?.pan?.alert
  ">
@@ -1890,9 +1961,8 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input color="grey-9" @blur="v$.merchant.businessInformation?.gstId?.$touch"
+ <q-input :model-value="merchant.businessInformation.gstId" @update:model-value="val => marsRequiredFormattingofGST(val ? val.toUpperCase() : val)" color="grey-9" @blur="v$.merchant.businessInformation?.gstId?.$touch"
  :error="v$.merchant?.businessInformation?.gstId?.$error"
- v-model.trim="merchant.businessInformation.gstId" @update:model-value="val => marsRequiredFormattingofGST(val ? val.toUpperCase() : val)"
  label="GST ID" placeholder="GST ID" />
  <div class="text-negative" v-if="error.field.merchant?.businessInformation?.gstId?.alert">
  <MarsErrorResponse :error="error.field.merchant?.businessInformation?.gstId" />
@@ -1984,11 +2054,21 @@
  </div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date"
- @blur="v$.merchant?.businessInformation?.memberSince?.$touch"
+ <q-input @blur="v$.merchant?.businessInformation?.memberSince?.$touch"
  :error="v$.merchant.businessInformation?.memberSince?.$error" color="grey-9"
  v-model.trim="merchant.businessInformation.memberSince" label="Member since*"
- placeholder="Member since*" />
+ placeholder="Member since*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.businessInformation.memberSince" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.businessInformation.memberSince" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.businessInformation?.memberSince?.alert
  ">
@@ -2101,9 +2181,20 @@
  </div>
 
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date"   color="grey-9"
+ <q-input color="grey-9"
    v-model.trim="merchant.additionalInfo.ownerDOB" label="Date Of Birth*"
- placeholder="Date Of Birth*" />
+ placeholder="Date Of Birth*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.additionalInfo.ownerDOB" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.additionalInfo.ownerDOB" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  </div>
 
  <div class="col-md-12">
@@ -2423,11 +2514,21 @@
  </div>
  </div>
  <div v-if="merchant.paymentDetails?.rentalType == 'E'" class="col-md-6 col-sm-12 col-xs-12">
- <q-input type="date"
- @blur="v$.merchant?.paymentDetails?.emiStartDate?.$touch"
+ <q-input @blur="v$.merchant?.paymentDetails?.emiStartDate?.$touch"
  :error="v$.merchant.paymentDetails?.emiStartDate?.$error" color="grey-9"
  v-model.trim="merchant.paymentDetails.emiStartDate" label="Emi Start Date*"
- placeholder="Emi Start Date*" />
+ placeholder="Emi Start Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.paymentDetails.emiStartDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.paymentDetails.emiStartDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="error.field.merchant?.paymentDetails?.emiStartDate?.alert">
  <MarsErrorResponse :error="error.field.merchant?.paymentDetails?.emiStartDate" />
  </div>
@@ -5025,8 +5126,8 @@
  <div class="q-title">Merchant Bank Details</div>
  </div>
  <div class="col-md-6 col-sm-12 col-xs-12">
- <q-input @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val.toUpperCase(); }" color="grey-9" :error="v$.merchant?.bankInformation?.bankDetails?.ifsc?.$error"
- @blur="populateBankDetails" v-model.trim="merchant.bankInformation.bankDetails.ifsc"
+ <q-input :model-value="merchant.bankInformation.bankDetails.ifsc" @update:model-value="val => { merchant.bankInformation.bankDetails.ifsc = val ? val.toUpperCase() : val; }" color="grey-9" :error="v$.merchant?.bankInformation?.bankDetails?.ifsc?.$error"
+ @blur="populateBankDetails"
  label="IFSC Code*" placeholder="Enter IFSC*" />
  <div class="text-negative" v-if="
  error.field.merchant?.bankInformation?.bankDetails?.ifsc?.alert
@@ -5475,7 +5576,7 @@
  </div>
  </div>
  <div class="col-md-4 col-sm-12">
- <q-input type="date"   color="grey-9"  @blur="
+ <q-input color="grey-9"  @blur="
  v$.merchant?.bankInformation?.collectionDetails
  .collectedDate.$touch;
  " :error="
@@ -5483,7 +5584,18 @@
  .collectedDate.$error
  " v-model.trim="
  merchant.bankInformation.collectionDetails.collectedDate
- " label="Swipe Date*" placeholder="Swipe Date*" />
+ " label="Collected Date*" placeholder="Collected Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.bankInformation.collectionDetails.collectedDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.bankInformation.collectionDetails.collectedDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.bankInformation?.collectionDetails
  .collectedDate.alert
@@ -5563,7 +5675,7 @@
  </div>
  </div>
  <div class="col-md-3 col-sm-12">
- <q-input type="date"   color="grey-9"  @blur="
+ <q-input color="grey-9"  @blur="
  v$.merchant?.bankInformation?.collectionDetails?.chequeDate
  .$touch;
  " :error="
@@ -5571,7 +5683,18 @@
  .$error
  " v-model.trim="
  merchant.bankInformation.collectionDetails.chequeDate
- " label="Cheque Date*" placeholder="Cheque Date*" />
+ " label="Cheque Date*" placeholder="Cheque Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.bankInformation.collectionDetails.chequeDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.bankInformation.collectionDetails.chequeDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.bankInformation?.collectionDetails
  .chequeDate.alert
@@ -5591,7 +5714,7 @@
  </div>
  </div>
  <div class="col-md-3 col-sm-12 col-xs-12">
- <q-input type="date"   color="grey-9"  @blur="
+ <q-input color="grey-9"  @blur="
  v$.merchant?.bankInformation?.collectionDetails
  .chequeDepositedDate.$touch;
  " :error="
@@ -5600,7 +5723,18 @@
  " v-model.trim="
  merchant.bankInformation.collectionDetails
  .chequeDepositedDate
- " label="Cheque Deposited Date*" placeholder="Cheque Deposited Date*" />
+ " label="Cheque Deposited Date*" placeholder="Cheque Deposited Date*" mask="####-##-##">
+ <template v-slot:append>
+ <q-icon name="event" class="cursor-pointer">
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.bankInformation.collectionDetails.chequeDepositedDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-icon>
+ </template>
+ <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+ <q-date v-model="merchant.bankInformation.collectionDetails.chequeDepositedDate" mask="YYYY-MM-DD" />
+ </q-popup-proxy>
+ </q-input>
  <div class="text-negative" v-if="
  error.field.merchant?.bankInformation?.collectionDetails
  .chequeDepositedDate.alert
@@ -7524,12 +7658,12 @@ import { useVuelidate } from '@vuelidate/core';
  // preAuth: "N",
  creditCardBlock: "N",
  tipPercentage: "20",
- rentalPlanCode: 1,
+ rentalPlanCode: "",
  // amountCollected:"",
  recurringFees: "",
  bankFee: "",
- serviceProvider: 1,
- networkPreferred: 1,
+ serviceProvider: "",
+ networkPreferred: "",
  rentalMode: "S",
  rentalType: "A",
  advanceRentCollected: "",
@@ -11748,8 +11882,8 @@ import { useVuelidate } from '@vuelidate/core';
  this.deviceTypeApp = this.propLeadDeatils?.device;
  this.salesPerson = this.propLeadDeatils?.createdBy?.name;
  this.salesCode = this.propLeadDeatils?.createdBy?.employeeID;
- this.merchant.salesInformation.salesPersonName =
- (this.salesPerson || "") + "-" + (this.salesCode || "");
+ // No pre-filling with static user data
+ this.merchant.salesInformation.salesPersonName = "";
  this.salesPersonName = (this.salesPerson || "") + "-" + (this.salesCode || "");
  this.merchant.mdrPlan.domesticDebitUpTo2000.percentage =
  this.getShortLeadInfo?.debitLessthanAmount;
@@ -11831,6 +11965,15 @@ import { useVuelidate } from '@vuelidate/core';
  this.getShortLeadInfo?.intlCC;
  },
  watch: {
+ "merchant.paymentDetails": {
+   handler(newVal) {
+     if (newVal.rentalPlanCode === 1 || newVal.rentalPlanCode === "1") this.merchant.paymentDetails.rentalPlanCode = "";
+     if (newVal.serviceProvider === 1 || newVal.serviceProvider === "1") this.merchant.paymentDetails.serviceProvider = "";
+     if (newVal.networkPreferred === 1 || newVal.networkPreferred === "1") this.merchant.paymentDetails.networkPreferred = "";
+   },
+   deep: true
+ },
+
  "merchant.businessInformation.currentPosName": function (newVal) {
  this.v$.$touch();
  },
@@ -13138,12 +13281,7 @@ import { useVuelidate } from '@vuelidate/core';
  return self
  .SALES_PERSON_FROM_MARS(institutionCode)
  .then((response) => {
- self.salesPersonOptions = [
- {
- label: this.salesPerson + "-" + this.salesCode,
- value: this.salesPerson + "-" + this.salesCode,
- },
- ];
+ self.salesPersonOptions = [];
  self.salesPersonFromMars.items.map((oo) => {
  self.salesPersonOptions.push({
  label: oo.name + " - " + oo.empCode,
@@ -13153,6 +13291,11 @@ import { useVuelidate } from '@vuelidate/core';
  self.salesPersonOptionsFiltered = [...self.salesPersonOptions];
 
  // self.salesPersonOptions = salesPerson;
+ })
+ .catch(() => {
+   self.salesPersonOptions = [];
+   self.salesPersonOptionsFiltered = [];
+   this.merchant.salesInformation.salesPersonName = "";
  });
  }).then(() => {
  /* API call to fetch city */
@@ -13359,16 +13502,16 @@ import { useVuelidate } from '@vuelidate/core';
 
  // this.merchant.salesInformation.salesPersonName = this.merchant.salesInformation.salesPersonName;
  // this.merchant.salesInformation.salesPersonName = this.salesPerson + "-" + this.salesCode,
- if (
- this.merchant.salesInformation.salesPersonName !=
- this.salesPerson + "-" + this.salesCode
- ) {
- this.merchant.salesInformation.salesPersonName =
- this.merchant.salesInformation.salesPersonName;
- } else {
- this.merchant.salesInformation.salesPersonName =
- this.salesPerson + "-" + this.salesCode;
- }
+ // if (
+ // this.merchant.salesInformation.salesPersonName !=
+ // this.salesPerson + "-" + this.salesCode
+ // ) {
+ // this.merchant.salesInformation.salesPersonName =
+ // this.merchant.salesInformation.salesPersonName;
+ // } else {
+ // this.merchant.salesInformation.salesPersonName =
+ // this.salesPerson + "-" + this.salesCode;
+ // }
 
  if (this.marsSavedDataFromInternal.companyInformation) { this.merchant.companyInformation = _.merge({}, this.merchant.companyInformation, this.marsSavedDataFromInternal.companyInformation); }
  // Restore constitutionName from constitution value if missing (v2 migration fix)
@@ -13437,6 +13580,11 @@ import { useVuelidate } from '@vuelidate/core';
  }
  this.merchant.companyInformation.constitution =
  this.propLeadDeatils.merchantType.marsMappingId;
+            // Final sanitization of default values
+            if (this.merchant.paymentDetails.rentalPlanCode == 1 || this.merchant.paymentDetails.rentalPlanCode == "1") this.merchant.paymentDetails.rentalPlanCode = "";
+            if (this.merchant.paymentDetails.serviceProvider == 1 || this.merchant.paymentDetails.serviceProvider == "1") this.merchant.paymentDetails.serviceProvider = "";
+            if (this.merchant.paymentDetails.networkPreferred == 1 || this.merchant.paymentDetails.networkPreferred == "1") this.merchant.paymentDetails.networkPreferred = "";
+
  });
  } else {
  return true;

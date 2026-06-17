@@ -86,7 +86,7 @@
       </div>
       <div class="col-md-6 col-sm-12 col-xs-12">
         <q-input
-          upper-case
+          @update:model-value="val => { merchant.businessInformation.gstId = val.toUpperCase(); }"
           color="grey-9"
           @blur="v$.merchant.businessInformation.gstId.$touch()"
           :error="v$.merchant.businessInformation.gstId.$error"

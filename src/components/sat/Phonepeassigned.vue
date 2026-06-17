@@ -24,16 +24,17 @@
             <div class="row items-center">
               <div class="col-md-4 col-sm-6 col-xs-6">
                 <q-select
-                  use-input
-                  clearable
-                  v-model="formData.assignTo"
-                  color="grey-9"
-                  :disable="formData.marsDeviceIdsCookedUnAssinged.length == 0"
-                  :options="assignToOptions"
-                  placeholder="Assign To"
-                  emit-value
-                  map-options
-                />
+              use-input
+
+              clearable
+              v-model="formData.assignTo"
+              color="grey-9"
+              :disable="formData.marsDeviceIdsCookedUnAssinged.length == 0"
+              :options="assignToOptions"
+              :label="formData.assignTo ? '' : 'Assign To'"
+              emit-value
+              map-options
+            />
               </div>
               <div class="col-md-4 col-sm-6 col-xs-6">
                 <q-checkbox

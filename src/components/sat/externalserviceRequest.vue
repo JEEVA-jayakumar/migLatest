@@ -30,7 +30,7 @@
               color="grey-9"
               :disable="formData.marsDeviceIdsCooked.length == 0"
               :options="assignToRegionOptions"
-              placeholder="Assign To Region"
+              :label="formData.assignTo.region ? '' : 'Assign To Region'"
               emit-value
               map-options
             />
